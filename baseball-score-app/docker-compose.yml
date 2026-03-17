@@ -1,0 +1,33 @@
+version: '3.9'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+    container_name: baseball-score-frontend
+    ports:
+      - '5173:5173'
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8080
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+    container_name: baseball-score-backend
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./backend:/app
+      - ./backend/data:/app/data
+    environment:
+      - PORT=8080
+      - APP_ENV=development
+      - DB_PATH=/app/data/app.db
+      - CORS_ALLOW_ORIGIN=http://localhost:5173
+    command: sh -c "go run ./cmd/api"
