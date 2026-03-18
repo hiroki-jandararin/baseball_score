@@ -68,3 +68,32 @@ func (s *GameStateSuite) TestApplyPlay_ThreeOutsChangeHalfInning() {
 		s.Equal(false, next.Runner.Third)
 	})
 }
+
+func (s *GameStateSuite) TestApplyPlay_ThreeOutsChangeInning() {
+	s.Run("2 outs bottom of 1st -> top of 2nd and bases cleared", func() {
+		state := GameState {
+			Inning:     1,
+			InningHalf: Bottom,
+			HomeScore:  0,
+			AwayScore:  0,
+			Runner: RunnerState{
+				First:  true,
+				Second: true,
+				Third:  true,
+			},
+			Outs: 2,
+		}
+		play := Play{
+			Type: Strikeout,
+		}
+		next := ApplyPlay(&state, play)
+		s.Equal(0, next.Outs)
+		s.Equal(2, next.Inning)
+		s.Equal(Top, next.InningHalf)
+		s.Equal(0, next.HomeScore)
+		s.Equal(0, next.AwayScore)
+		s.Equal(false, next.Runner.First)
+		s.Equal(false, next.Runner.Second)
+		s.Equal(false, next.Runner.Third)
+	})
+}
