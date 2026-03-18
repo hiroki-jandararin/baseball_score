@@ -21,7 +21,7 @@ func (s *GameStateSuite) TestInitializeGameState() {
 		s.Equal(0, state.Outs)
 		s.Equal(0, state.HomeScore)
 		s.Equal(0, state.AwayScore)
-		s.Equal("top", state.InningHalf)
+		s.Equal(Top, state.InningHalf)
 		s.Equal(false, state.Runner.First)
 		s.Equal(false, state.Runner.Second)
 		s.Equal(false, state.Runner.Third)

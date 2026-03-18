@@ -5,7 +5,7 @@ type GameState struct {
 	Outs        int
 	HomeScore   int
 	AwayScore   int
-	InningHalf  string
+	InningHalf  InningHalf
 	Runner RunnerState
 }
 
@@ -28,7 +28,7 @@ func NewGameState() *GameState {
 		Outs:       0,
 		HomeScore:  0,
 		AwayScore:  0,
-		InningHalf: string(Top),
+		InningHalf: Top,
 		Runner: RunnerState{
 			First:  false,
 			Second: false,

@@ -1,11 +1,10 @@
 package game
 
-
 func (s *GameStateSuite) TestApplyPlay_StrikeoutIncreasesOuts() {
-	s.Run("strikeout", func() {
+	s.Run("0 outs empty bases -> 1 out", func() {
 		state := NewGameState()
 		play := Play{
-			Type: "strikeout",
+			Type: Strikeout,
 		}
 		next := ApplyPlay(state, play)
 		s.Equal(1, next.Outs)
@@ -13,10 +12,10 @@ func (s *GameStateSuite) TestApplyPlay_StrikeoutIncreasesOuts() {
 }
 
 func (s *GameStateSuite) TestApplyPlay_StrikeoutOnlyAffectsOuts() {
-	s.Run("strikeout", func() {
+	s.Run("0 outs runner on first -> 1 out runner stays on first", func() {
 		state := GameState {
 			Inning:     1,
-			InningHalf: "top",
+			InningHalf: Top,
 			HomeScore:  0,
 			AwayScore:  0,
 			Runner: RunnerState{
@@ -27,15 +26,44 @@ func (s *GameStateSuite) TestApplyPlay_StrikeoutOnlyAffectsOuts() {
 			Outs: 0,
 		}
 		play := Play{
-			Type: "strikeout",
+			Type: Strikeout,
 		}
 		next := ApplyPlay(&state, play)
 		s.Equal(1, next.Outs)
 		s.Equal(1, next.Inning)
-		s.Equal("top", next.InningHalf)
+		s.Equal(Top, next.InningHalf)
 		s.Equal(0, next.HomeScore)
 		s.Equal(0, next.AwayScore)
 		s.Equal(true, next.Runner.First)
+		s.Equal(false, next.Runner.Second)
+		s.Equal(false, next.Runner.Third)
+	})
+}
+
+func (s *GameStateSuite) TestApplyPlay_ThreeOutsChangeHalfInning() {
+	s.Run("2 outs top of 1st -> bottom of 1st and bases cleared", func() {
+		state := GameState {
+			Inning:     1,
+			InningHalf: Top,
+			HomeScore:  0,
+			AwayScore:  0,
+			Runner: RunnerState{
+				First:  true,
+				Second: false,
+				Third:  false,
+			},
+			Outs: 2,
+		}
+		play := Play{
+			Type: Strikeout,
+		}
+		next := ApplyPlay(&state, play)
+		s.Equal(0, next.Outs)
+		s.Equal(1, next.Inning)
+		s.Equal(Bottom, next.InningHalf)
+		s.Equal(0, next.HomeScore)
+		s.Equal(0, next.AwayScore)
+		s.Equal(false, next.Runner.First)
 		s.Equal(false, next.Runner.Second)
 		s.Equal(false, next.Runner.Third)
 	})
