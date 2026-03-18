@@ -155,3 +155,108 @@ func (s *GameStateSuite) TestApplyPlay_GroundOutsChangeInning() {
 		s.Equal(false, next.Runner.Third)
 	})
 }
+
+func (s *GameStateSuite) TestApplyPlay_WalkPutsRunnersOnFirst() {
+	s.Run("0 outs empty bases -> 0 outs runner on first", func() {
+		state := NewGameState()
+		play := Play{
+			Type: Walk,
+		}
+		next := ApplyPlay(state, play)
+		s.Equal(0, next.Outs)
+		s.Equal(1, next.Inning)
+		s.Equal(Top, next.InningHalf)
+		s.Equal(0, next.HomeScore)
+		s.Equal(0, next.AwayScore)
+		s.Equal(true, next.Runner.First)
+		s.Equal(false, next.Runner.Second)
+		s.Equal(false, next.Runner.Third)
+	})
+}
+
+func (s *GameStateSuite) TestApplyPlay_WalkForcesRunnerToSecond() {
+	s.Run("0 outs runner on first -> 0 outs runners on first and second", func() {
+		state := GameState {
+			Inning:     1,
+			InningHalf: Top,
+			HomeScore:  0,
+			AwayScore:  0,
+			Runner: RunnerState{
+				First:  true,
+				Second: false,
+				Third:  false,
+			},
+			Outs: 0,
+		}
+		play := Play{
+			Type: Walk,
+		}
+		next := ApplyPlay(&state, play)
+		s.Equal(0, next.Outs)
+		s.Equal(1, next.Inning)
+		s.Equal(Top, next.InningHalf)
+		s.Equal(0, next.HomeScore)
+		s.Equal(0, next.AwayScore)
+		s.Equal(true, next.Runner.First)
+		s.Equal(true, next.Runner.Second)
+		s.Equal(false, next.Runner.Third)
+	})	
+}
+
+func (s *GameStateSuite) TestApplyPlay_WalkLoadsBases() {
+	s.Run("0 outs runners on first and second -> 0 outs bases loaded", func() {
+		state := GameState {
+			Inning:     1,
+			InningHalf: Top,
+			HomeScore:  0,
+			AwayScore:  0,
+			Runner: RunnerState{
+				First:  true,
+				Second: true,
+				Third:  false,
+			},
+			Outs: 0,
+		}
+		play := Play{
+			Type: Walk,
+		}
+		next := ApplyPlay(&state, play)
+		s.Equal(0, next.Outs)
+		s.Equal(1, next.Inning)
+		s.Equal(Top, next.InningHalf)
+		s.Equal(0, next.HomeScore)
+		s.Equal(0, next.AwayScore)
+		s.Equal(true, next.Runner.First)
+		s.Equal(true, next.Runner.Second)
+		s.Equal(true, next.Runner.Third)
+	})	
+}
+
+func (s *GameStateSuite) TestApplyPlay_WalkWithBasesLoadedScoresOne(){
+	s.Run("0 outs bases loaded -> 0 outs bases loaded and 1 run scored", func() {
+		state := GameState {
+			Inning:     1,
+			InningHalf: Top,
+			HomeScore:  0,
+			AwayScore:  0,
+			Runner: RunnerState{
+				First:  true,
+				Second: true,
+				Third:  true,
+			},
+			Outs: 0,
+		}
+		play := Play{
+			Type: Walk,
+		}
+		next := ApplyPlay(&state, play)
+		s.Equal(0, next.Outs)
+		s.Equal(1, next.Inning)
+		s.Equal(Top, next.InningHalf)
+		s.Equal(0, next.HomeScore)
+		s.Equal(1, next.AwayScore)
+		s.Equal(true, next.Runner.First)
+		s.Equal(true, next.Runner.Second)
+		s.Equal(true, next.Runner.Third)
+	})
+}

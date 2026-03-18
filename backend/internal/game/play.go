@@ -6,6 +6,7 @@ const (
 	Strikeout PlayType = "strikeout"
 	Flyout	PlayType = "flyout"
 	Groundout PlayType = "groundout"
+	Walk PlayType = "walk"
 )
 
 func ApplyPlay(state *GameState, play Play) *GameState {
@@ -25,7 +26,16 @@ func ApplyPlay(state *GameState, play Play) *GameState {
 				next.Runner = RunnerState{}
 			}
 		}
+	case Walk:
+		if !next.Runner.First {
+			next.Runner.First = true
+		} else if next.Runner.First && !next.Runner.Second {
+			next.Runner.Second = true
+		} else if next.Runner.First && next.Runner.Second && !next.Runner.Third {
+			next.Runner.Third = true
+		} 
 	}
+
 
 	return &next
 }
