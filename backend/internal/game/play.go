@@ -4,13 +4,15 @@ type PlayType string
 
 const (
 	Strikeout PlayType = "strikeout"
+	Flyout	PlayType = "flyout"
+	Groundout PlayType = "groundout"
 )
 
 func ApplyPlay(state *GameState, play Play) *GameState {
 	next := *state
 
 	switch play.Type {
-	case Strikeout:
+	case Strikeout, Flyout, Groundout:
 		next.Outs++
 		if next.Outs >= 3 {
 			next.Outs = 0

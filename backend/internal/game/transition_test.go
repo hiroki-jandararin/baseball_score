@@ -97,3 +97,61 @@ func (s *GameStateSuite) TestApplyPlay_ThreeOutsChangeInning() {
 		s.Equal(false, next.Runner.Third)
 	})
 }
+
+func (s *GameStateSuite) TestApplyPlay_flyOutsChangeInningAndScore() {
+	s.Run("2 outs bottom of 1st with runner on third -> top of 2nd ", func() {
+		state := GameState {
+			Inning:     1,
+			InningHalf: Bottom,
+			HomeScore:  0,
+			AwayScore:  0,
+			Runner: RunnerState{
+				First:  false,
+				Second: false,
+				Third:  true,
+			},
+			Outs: 2,
+		}
+		play := Play{
+			Type: Flyout,
+		}
+		next := ApplyPlay(&state, play)
+		s.Equal(0, next.Outs)
+		s.Equal(2, next.Inning)
+		s.Equal(Top, next.InningHalf)
+		s.Equal(0, next.HomeScore)
+		s.Equal(0, next.AwayScore)
+		s.Equal(false, next.Runner.First)
+		s.Equal(false, next.Runner.Second)
+		s.Equal(false, next.Runner.Third)
+	})
+}
+
+func (s *GameStateSuite) TestApplyPlay_GroundOutsChangeInning() {
+	s.Run("2 outs top of 2nd with runner on third -> bottom of 2nd ", func() {
+		state := GameState {
+			Inning:     2,
+			InningHalf: Top,
+			HomeScore:  0,
+			AwayScore:  0,
+			Runner: RunnerState{
+				First:  false,
+				Second: false,
+				Third:  true,
+			},
+			Outs: 2,
+		}
+		play := Play{
+			Type: Groundout,
+		}
+		next := ApplyPlay(&state, play)
+		s.Equal(0, next.Outs)
+		s.Equal(2, next.Inning)
+		s.Equal(Bottom, next.InningHalf)
+		s.Equal(0, next.HomeScore)
+		s.Equal(0, next.AwayScore)
+		s.Equal(false, next.Runner.First)
+		s.Equal(false, next.Runner.Second)
+		s.Equal(false, next.Runner.Third)
+	})
+}
