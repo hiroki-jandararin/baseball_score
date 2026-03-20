@@ -1,12 +1,16 @@
 package game
 
+type TeamID string
+
 type GameState struct {
-	Inning      int
-	Outs        int
-	HomeScore   int
-	AwayScore   int
-	InningHalf  InningHalf
-	Runner RunnerState
+	Inning              int
+	Outs                int
+	FirstBattingTeamID  TeamID
+	SecondBattingTeamID TeamID
+	FirstBattingScore   int
+	SecondBattingScore  int
+	InningHalf          InningHalf
+	Runner              RunnerState
 }
 
 type RunnerState struct {
@@ -24,15 +28,23 @@ const (
 
 func NewGameState() *GameState {
 	return &GameState{
-		Inning:     1,
-		Outs:       0,
-		HomeScore:  0,
-		AwayScore:  0,
-		InningHalf: Top,
+		Inning:             1,
+		Outs:               0,
+		FirstBattingScore:  0,
+		SecondBattingScore: 0,
+		InningHalf:         Top,
 		Runner: RunnerState{
 			First:  false,
 			Second: false,
 			Third:  false,
 		},
 	}
+}
+
+func (s *GameState) CurrentBattingTeamID() TeamID {
+	if s.InningHalf == Top {
+		return s.FirstBattingTeamID
+	}
+
+	return s.SecondBattingTeamID
 }

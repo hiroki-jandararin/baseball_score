@@ -19,8 +19,8 @@ func (s *GameStateSuite) TestInitializeGameState() {
 		state := NewGameState()
 		s.Equal(1, state.Inning)
 		s.Equal(0, state.Outs)
-		s.Equal(0, state.HomeScore)
-		s.Equal(0, state.AwayScore)
+		s.Equal(0, state.FirstBattingScore)
+		s.Equal(0, state.SecondBattingScore)
 		s.Equal(Top, state.InningHalf)
 		s.Equal(false, state.Runner.First)
 		s.Equal(false, state.Runner.Second)
@@ -28,5 +28,24 @@ func (s *GameStateSuite) TestInitializeGameState() {
 	})
 }
 
+func (s *GameStateSuite) TestCurrentBattingTeamID() {
+	s.Run("top of inning returns first batting team", func() {
+		state := GameState{
+			Inning:              1,
+			InningHalf:          Top,
+			FirstBattingTeamID:  TeamID("team1"),
+			SecondBattingTeamID: TeamID("team2"),
+		}
+		s.Equal(TeamID("team1"), state.CurrentBattingTeamID())
+	})
 
-
+	s.Run("bottom of inning returns second batting team", func() {
+		state := GameState{
+			Inning:              1,
+			InningHalf:          Bottom,
+			FirstBattingTeamID:  TeamID("team1"),
+			SecondBattingTeamID: TeamID("team2"),
+		}
+		s.Equal(TeamID("team2"), state.CurrentBattingTeamID())
+	})
+}
