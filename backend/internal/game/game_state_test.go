@@ -49,3 +49,29 @@ func (s *GameStateSuite) TestCurrentBattingTeamID() {
 		s.Equal(TeamID("team2"), state.CurrentBattingTeamID())
 	})
 }
+
+func (s *GameStateSuite) TestAddRun() {
+	s.Run("adds runs to first batting team in top of inning", func() {
+		state := GameState{
+			Inning:             1,
+			InningHalf:         Top,
+			FirstBattingScore:  0,
+			SecondBattingScore: 0,
+		}
+		state.AddRun(2)
+		s.Equal(2, state.FirstBattingScore)
+		s.Equal(0, state.SecondBattingScore)
+	})
+	
+	s.Run("adds runs to second batting team in bottom of inning", func() {
+		state := GameState{
+			Inning:             1,
+			InningHalf:         Bottom,
+			FirstBattingScore:  0,
+			SecondBattingScore: 0,
+		}
+		state.AddRun(3)
+		s.Equal(0, state.FirstBattingScore)
+		s.Equal(3, state.SecondBattingScore)
+	})	
+}

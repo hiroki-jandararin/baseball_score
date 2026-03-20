@@ -48,3 +48,12 @@ func (s *GameState) CurrentBattingTeamID() TeamID {
 
 	return s.SecondBattingTeamID
 }
+
+func (s *GameState) AddRun(runs int) {
+	if s.InningHalf == Top {
+		s.FirstBattingScore += runs
+		return
+	}
+
+	s.SecondBattingScore += runs
+}

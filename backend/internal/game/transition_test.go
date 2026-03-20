@@ -232,7 +232,7 @@ func (s *GameStateSuite) TestApplyPlay_WalkLoadsBases() {
 	})	
 }
 
-func (s *GameStateSuite) TestApplyPlay_WalkWithBasesLoadedScoresOne(){
+func (s *GameStateSuite) TestApplyPlay_WalkWithBasesLoadedScoresOne() {
 	s.Run("0 outs bases loaded -> 0 outs bases loaded and 1 run scored", func() {
 		state := GameState {
 			Inning:     1,
@@ -253,8 +253,8 @@ func (s *GameStateSuite) TestApplyPlay_WalkWithBasesLoadedScoresOne(){
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
-		s.Equal(0, next.FirstBattingScore)
-		s.Equal(1, next.SecondBattingScore)
+		s.Equal(1, next.FirstBattingScore)
+		s.Equal(0, next.SecondBattingScore)
 		s.Equal(true, next.Runner.First)
 		s.Equal(true, next.Runner.Second)
 		s.Equal(true, next.Runner.Third)

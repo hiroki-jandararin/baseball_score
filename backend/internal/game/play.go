@@ -4,9 +4,9 @@ type PlayType string
 
 const (
 	Strikeout PlayType = "strikeout"
-	Flyout	PlayType = "flyout"
+	Flyout    PlayType = "flyout"
 	Groundout PlayType = "groundout"
-	Walk PlayType = "walk"
+	Walk      PlayType = "walk"
 )
 
 func ApplyPlay(state *GameState, play Play) *GameState {
@@ -33,9 +33,10 @@ func ApplyPlay(state *GameState, play Play) *GameState {
 			next.Runner.Second = true
 		} else if next.Runner.First && next.Runner.Second && !next.Runner.Third {
 			next.Runner.Third = true
-		} 
+		} else if next.Runner.First && next.Runner.Second && next.Runner.Third {
+			next.AddRun(1)
+		}
 	}
-
 
 	return &next
 }
