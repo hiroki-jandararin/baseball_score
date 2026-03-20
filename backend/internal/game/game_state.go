@@ -7,8 +7,7 @@ type GameState struct {
 	Outs                int
 	FirstBattingTeamID  TeamID
 	SecondBattingTeamID TeamID
-	FirstBattingScore   int
-	SecondBattingScore  int
+	Teams			   map[TeamID]*TeamState
 	InningHalf          InningHalf
 	Runner              RunnerState
 }
@@ -17,6 +16,13 @@ type RunnerState struct {
 	First  bool
 	Second bool
 	Third  bool
+}
+
+type PlayerID string
+
+type TeamState struct {
+	TeamID TeamID
+	Score  int
 }
 
 type InningHalf string
@@ -30,8 +36,12 @@ func NewGameState() *GameState {
 	return &GameState{
 		Inning:             1,
 		Outs:               0,
-		FirstBattingScore:  0,
-		SecondBattingScore: 0,
+		FirstBattingTeamID:  "team1",
+		SecondBattingTeamID: "team2",
+		Teams: map[TeamID]*TeamState{
+			"team1": {TeamID: "team1", Score: 0},
+			"team2": {TeamID: "team2", Score: 0},
+		},
 		InningHalf:         Top,
 		Runner: RunnerState{
 			First:  false,
@@ -51,9 +61,9 @@ func (s *GameState) CurrentBattingTeamID() TeamID {
 
 func (s *GameState) AddRun(runs int) {
 	if s.InningHalf == Top {
-		s.FirstBattingScore += runs
+		s.Teams[s.FirstBattingTeamID].Score += runs
 		return
 	}
 
-	s.SecondBattingScore += runs
+	s.Teams[s.SecondBattingTeamID].Score += runs
 }

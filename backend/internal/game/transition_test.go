@@ -16,8 +16,12 @@ func (s *GameStateSuite) TestApplyPlay_StrikeoutOnlyAffectsOuts() {
 		state := GameState {
 			Inning:     1,
 			InningHalf: Top,
-			FirstBattingScore:  0,
-			SecondBattingScore:  0,
+			FirstBattingTeamID:  TeamID("team1"),
+			SecondBattingTeamID: TeamID("team2"),
+			Teams: map[TeamID]*TeamState{
+				"team1": {TeamID: "team1", Score: 0},
+				"team2": {TeamID: "team2", Score: 0},
+			},
 			Runner: RunnerState{
 				First:  true,
 				Second: false,
@@ -32,8 +36,8 @@ func (s *GameStateSuite) TestApplyPlay_StrikeoutOnlyAffectsOuts() {
 		s.Equal(1, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
-		s.Equal(0, next.FirstBattingScore)
-		s.Equal(0, next.SecondBattingScore)
+		s.Equal(0, state.Teams["team1"].Score)
+		s.Equal(0, state.Teams["team2"].Score)
 		s.Equal(true, next.Runner.First)
 		s.Equal(false, next.Runner.Second)
 		s.Equal(false, next.Runner.Third)
@@ -45,8 +49,12 @@ func (s *GameStateSuite) TestApplyPlay_ThreeOutsChangeHalfInning() {
 		state := GameState {
 			Inning:     1,
 			InningHalf: Top,
-			FirstBattingScore:  0,
-			SecondBattingScore:  0,
+			FirstBattingTeamID:  TeamID("team1"),
+			SecondBattingTeamID: TeamID("team2"),
+			Teams: map[TeamID]*TeamState{
+				"team1": {TeamID: "team1", Score: 0},
+				"team2": {TeamID: "team2", Score: 0},
+			},
 			Runner: RunnerState{
 				First:  true,
 				Second: false,
@@ -61,8 +69,8 @@ func (s *GameStateSuite) TestApplyPlay_ThreeOutsChangeHalfInning() {
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Bottom, next.InningHalf)
-		s.Equal(0, next.FirstBattingScore)
-		s.Equal(0, next.SecondBattingScore)
+		s.Equal(0, next.Teams["team1"].Score)
+		s.Equal(0, next.Teams["team2"].Score)
 		s.Equal(false, next.Runner.First)
 		s.Equal(false, next.Runner.Second)
 		s.Equal(false, next.Runner.Third)
@@ -74,8 +82,12 @@ func (s *GameStateSuite) TestApplyPlay_ThreeOutsChangeInning() {
 		state := GameState {
 			Inning:     1,
 			InningHalf: Bottom,
-			FirstBattingScore:  0,
-			SecondBattingScore:  0,
+			FirstBattingTeamID:  TeamID("team1"),
+			SecondBattingTeamID: TeamID("team2"),
+			Teams: map[TeamID]*TeamState{
+				"team1": {TeamID: "team1", Score: 0},
+				"team2": {TeamID: "team2", Score: 0},
+			},
 			Runner: RunnerState{
 				First:  true,
 				Second: true,
@@ -90,8 +102,8 @@ func (s *GameStateSuite) TestApplyPlay_ThreeOutsChangeInning() {
 		s.Equal(0, next.Outs)
 		s.Equal(2, next.Inning)
 		s.Equal(Top, next.InningHalf)
-		s.Equal(0, next.FirstBattingScore)
-		s.Equal(0, next.SecondBattingScore)
+		s.Equal(0, next.Teams["team1"].Score)
+		s.Equal(0, next.Teams["team2"].Score)
 		s.Equal(false, next.Runner.First)
 		s.Equal(false, next.Runner.Second)
 		s.Equal(false, next.Runner.Third)
@@ -103,8 +115,12 @@ func (s *GameStateSuite) TestApplyPlay_flyOutsChangeInningAndScore() {
 		state := GameState {
 			Inning:     1,
 			InningHalf: Bottom,
-			FirstBattingScore:  0,
-			SecondBattingScore:  0,
+			FirstBattingTeamID:  TeamID("team1"),
+			SecondBattingTeamID: TeamID("team2"),
+			Teams: map[TeamID]*TeamState{
+				"team1": {TeamID: "team1", Score: 0},
+				"team2": {TeamID: "team2", Score: 0},
+			},
 			Runner: RunnerState{
 				First:  false,
 				Second: false,
@@ -119,8 +135,8 @@ func (s *GameStateSuite) TestApplyPlay_flyOutsChangeInningAndScore() {
 		s.Equal(0, next.Outs)
 		s.Equal(2, next.Inning)
 		s.Equal(Top, next.InningHalf)
-		s.Equal(0, next.FirstBattingScore)
-		s.Equal(0, next.SecondBattingScore)
+		s.Equal(0, next.Teams["team1"].Score)
+		s.Equal(0, next.Teams["team2"].Score)
 		s.Equal(false, next.Runner.First)
 		s.Equal(false, next.Runner.Second)
 		s.Equal(false, next.Runner.Third)
@@ -132,8 +148,12 @@ func (s *GameStateSuite) TestApplyPlay_GroundOutsChangeInning() {
 		state := GameState {
 			Inning:     2,
 			InningHalf: Top,
-			FirstBattingScore:  0,
-			SecondBattingScore:  0,
+			FirstBattingTeamID:  TeamID("team1"),
+			SecondBattingTeamID: TeamID("team2"),
+			Teams: map[TeamID]*TeamState{
+				"team1": {TeamID: "team1", Score: 0},
+				"team2": {TeamID: "team2", Score: 0},
+			},
 			Runner: RunnerState{
 				First:  false,
 				Second: false,
@@ -148,8 +168,8 @@ func (s *GameStateSuite) TestApplyPlay_GroundOutsChangeInning() {
 		s.Equal(0, next.Outs)
 		s.Equal(2, next.Inning)
 		s.Equal(Bottom, next.InningHalf)
-		s.Equal(0, next.FirstBattingScore)
-		s.Equal(0, next.SecondBattingScore)
+		s.Equal(0, next.Teams["team1"].Score)
+		s.Equal(0, next.Teams["team2"].Score)
 		s.Equal(false, next.Runner.First)
 		s.Equal(false, next.Runner.Second)
 		s.Equal(false, next.Runner.Third)
@@ -166,8 +186,8 @@ func (s *GameStateSuite) TestApplyPlay_WalkPutsRunnersOnFirst() {
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
-		s.Equal(0, next.FirstBattingScore)
-		s.Equal(0, next.SecondBattingScore)
+		s.Equal(0, next.Teams["team1"].Score)
+		s.Equal(0, next.Teams["team2"].Score)
 		s.Equal(true, next.Runner.First)
 		s.Equal(false, next.Runner.Second)
 		s.Equal(false, next.Runner.Third)
@@ -179,8 +199,12 @@ func (s *GameStateSuite) TestApplyPlay_WalkForcesRunnerToSecond() {
 		state := GameState {
 			Inning:     1,
 			InningHalf: Top,
-			FirstBattingScore:  0,
-			SecondBattingScore:  0,
+			FirstBattingTeamID:  TeamID("team1"),
+			SecondBattingTeamID: TeamID("team2"),
+			Teams: map[TeamID]*TeamState{
+				"team1": {TeamID: "team1", Score: 0},
+				"team2": {TeamID: "team2", Score: 0},
+			},
 			Runner: RunnerState{
 				First:  true,
 				Second: false,
@@ -195,8 +219,8 @@ func (s *GameStateSuite) TestApplyPlay_WalkForcesRunnerToSecond() {
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
-		s.Equal(0, next.FirstBattingScore)
-		s.Equal(0, next.SecondBattingScore)
+		s.Equal(0, next.Teams["team1"].Score)
+		s.Equal(0, next.Teams["team2"].Score)
 		s.Equal(true, next.Runner.First)
 		s.Equal(true, next.Runner.Second)
 		s.Equal(false, next.Runner.Third)
@@ -208,8 +232,12 @@ func (s *GameStateSuite) TestApplyPlay_WalkLoadsBases() {
 		state := GameState {
 			Inning:     1,
 			InningHalf: Top,
-			FirstBattingScore:  0,
-			SecondBattingScore:  0,
+			FirstBattingTeamID:  TeamID("team1"),
+			SecondBattingTeamID: TeamID("team2"),
+			Teams: map[TeamID]*TeamState{
+				"team1": {TeamID: "team1", Score: 0},
+				"team2": {TeamID: "team2", Score: 0},
+			},
 			Runner: RunnerState{
 				First:  true,
 				Second: true,
@@ -224,8 +252,8 @@ func (s *GameStateSuite) TestApplyPlay_WalkLoadsBases() {
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
-		s.Equal(0, next.FirstBattingScore)
-		s.Equal(0, next.SecondBattingScore)
+		s.Equal(0, next.Teams["team1"].Score)
+		s.Equal(0, next.Teams["team2"].Score)
 		s.Equal(true, next.Runner.First)
 		s.Equal(true, next.Runner.Second)
 		s.Equal(true, next.Runner.Third)
@@ -237,8 +265,12 @@ func (s *GameStateSuite) TestApplyPlay_WalkWithBasesLoadedScoresOne() {
 		state := GameState {
 			Inning:     1,
 			InningHalf: Top,
-			FirstBattingScore:  0,
-			SecondBattingScore:  0,
+			FirstBattingTeamID:  TeamID("team1"),
+			SecondBattingTeamID: TeamID("team2"),
+			Teams: map[TeamID]*TeamState{
+				"team1": {TeamID: "team1", Score: 0},
+				"team2": {TeamID: "team2", Score: 0},
+			},
 			Runner: RunnerState{
 				First:  true,
 				Second: true,
@@ -253,8 +285,8 @@ func (s *GameStateSuite) TestApplyPlay_WalkWithBasesLoadedScoresOne() {
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
-		s.Equal(1, next.FirstBattingScore)
-		s.Equal(0, next.SecondBattingScore)
+		s.Equal(1, next.Teams["team1"].Score)
+		s.Equal(0, next.Teams["team2"].Score)
 		s.Equal(true, next.Runner.First)
 		s.Equal(true, next.Runner.Second)
 		s.Equal(true, next.Runner.Third)
