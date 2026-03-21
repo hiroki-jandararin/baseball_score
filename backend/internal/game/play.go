@@ -37,14 +37,51 @@ func ApplyPlay(state *GameState, play Play) *GameState {
 			}
 		}
 	case Walk, HitByPitch:
-		if !next.Runner.First {
-			next.Runner.First = true
-		} else if next.Runner.First && !next.Runner.Second {
-			next.Runner.Second = true
-		} else if next.Runner.First && next.Runner.Second && !next.Runner.Third {
-			next.Runner.Third = true
-		} else if next.Runner.First && next.Runner.Second && next.Runner.Third {
+		if next.Runner.First && next.Runner.Second && next.Runner.Third {
 			next.AddRun(1)
+			next.Runner = RunnerState{
+				First:  true,
+				Second: true,
+				Third:  true,
+			}
+		}else if next.Runner.First && next.Runner.Second {
+			next.Runner = RunnerState{
+				First:  true,
+				Second: true,
+				Third:  true,
+			}
+		}else if next.Runner.First && next.Runner.Third {
+			next.Runner = RunnerState{
+				First:  true,
+				Second: true,
+				Third:  true,
+			}
+		} else if next.Runner.Second && next.Runner.Third {
+			next.Runner = RunnerState{
+				First:  true,
+				Second: true,
+				Third:  true,
+			}
+		} else if next.Runner.First {
+			next.Runner = RunnerState{
+				First:  true,
+				Second: true,
+				Third:  false,
+			}
+		} else if next.Runner.Second {
+			next.Runner = RunnerState{
+				First:  true,
+				Second: true,
+				Third:  false,
+			}
+		} else if next.Runner.Third {
+			next.Runner = RunnerState{
+				First:  true,
+				Second: false,
+				Third:  true,
+			}
+		} else {
+			next.Runner.First = true
 		}
 	case Single:
 		if next.Runner.First && next.Runner.Second && next.Runner.Third {
