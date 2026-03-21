@@ -9,7 +9,7 @@ const (
 	Walk      PlayType = "walk"
 	HitByPitch PlayType = "hitByPitch"
 	Single   PlayType = "single"
-	// Double   PlayType = "double"
+	Double   PlayType = "double"
 	// Triple   PlayType = "triple"
 	// HomeRun  PlayType = "homeRun"
 	// Error	PlayType = "error"
@@ -132,7 +132,59 @@ func ApplyPlay(state *GameState, play Play) *GameState {
 			}
 		} else {
 			next.Runner.First = true
-		}	
+		}
+	case Double:
+		if next.Runner.First && next.Runner.Second && next.Runner.Third {
+			next.AddRun(2)
+			next.Runner = RunnerState{
+				First:  false,
+				Second: true,
+				Third:  true,
+			}
+		}else if next.Runner.First && next.Runner.Second {
+			next.AddRun(1)
+			next.Runner = RunnerState{
+				First:  false,
+				Second: true,
+				Third:  true,
+			}
+		}else if next.Runner.First && next.Runner.Third {
+			next.AddRun(1)
+			next.Runner = RunnerState{
+				First:  false,
+				Second: true,
+				Third:  true,
+			}
+		} else if next.Runner.Second && next.Runner.Third {
+			next.AddRun(2)
+			next.Runner = RunnerState{
+				First:  false,
+				Second: true,
+				Third:  false,
+			}
+		} else if next.Runner.First {
+			next.Runner = RunnerState{
+				First:  false,
+				Second: true,
+				Third:  true,
+			}
+		} else if next.Runner.Second {
+			next.AddRun(1)
+			next.Runner = RunnerState{
+				First:  false,
+				Second: true,
+				Third:  false,
+			}
+		} else if next.Runner.Third {
+			next.AddRun(1)
+			next.Runner = RunnerState{
+				First:  false,
+				Second: true,
+				Third:  false,
+			}
+		} else {
+			next.Runner.Second = true
+		}		
 	}
 
 	return &next
