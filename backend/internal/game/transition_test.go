@@ -292,3 +292,21 @@ func (s *GameStateSuite) TestApplyPlay_WalkWithBasesLoadedScoresOne() {
 		s.Equal(true, next.Runner.Third)
 	})
 }
+
+func (s *GameStateSuite) TestApplyPlay_HitByPitchPutsRunnersOnFirst() {
+	s.Run("0 outs empty bases -> 0 outs runner on first", func() {
+		state := NewGameState()
+		play := Play{
+			Type: HitByPitch,
+		}
+		next := ApplyPlay(state, play)
+		s.Equal(0, next.Outs)
+		s.Equal(1, next.Inning)
+		s.Equal(Top, next.InningHalf)
+		s.Equal(0, next.Teams["team1"].Score)
+		s.Equal(0, next.Teams["team2"].Score)
+		s.Equal(true, next.Runner.First)
+		s.Equal(false, next.Runner.Second)
+		s.Equal(false, next.Runner.Third)
+	})
+}
