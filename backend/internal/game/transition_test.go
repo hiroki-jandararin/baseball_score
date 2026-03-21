@@ -1189,3 +1189,252 @@ func (s *GameStateSuite) TestApplyPlay_TripleRunnersEmpty() {
 		s.Equal(true, next.Runner.Third)
 	})
 }
+
+func (s *GameStateSuite) TestApplyPlay_HomerunRunnersOnFirstAndSecondAndThird() {
+	s.Run("0 outs runners on first, second and third -> 0 outs no runners with four runs scored", func() {
+		state := GameState {
+			Inning:     1,
+			InningHalf: Top,
+			FirstBattingTeamID:  TeamID("team1"),
+			SecondBattingTeamID: TeamID("team2"),
+			Teams: map[TeamID]*TeamState{
+				"team1": {TeamID: "team1", Score: 0},
+				"team2": {TeamID: "team2", Score: 0},
+			},
+			Runner: RunnerState{
+				First:  true,
+				Second: true,
+				Third:  true,
+			},
+			Outs: 0,
+		}
+		play := Play{
+			Type: "homerun",
+		}
+		next := ApplyPlay(&state, play)
+		s.Equal(0, next.Outs)
+		s.Equal(1, next.Inning)
+		s.Equal(Top, next.InningHalf)
+		s.Equal(4, next.Teams["team1"].Score)
+		s.Equal(0, next.Teams["team2"].Score)
+		s.Equal(false, next.Runner.First)
+		s.Equal(false, next.Runner.Second)
+		s.Equal(false, next.Runner.Third)
+	})
+}
+
+func (s *GameStateSuite) TestApplyPlay_HomerunRunnersOnFirstAndSecond() {
+	s.Run("0 outs runners on first and second -> 0 outs no runners with three runs scored", func() {
+		state := GameState {
+			Inning:     1,
+			InningHalf: Top,
+			FirstBattingTeamID:  TeamID("team1"),
+			SecondBattingTeamID: TeamID("team2"),
+			Teams: map[TeamID]*TeamState{
+				"team1": {TeamID: "team1", Score: 0},
+				"team2": {TeamID: "team2", Score: 0},
+			},
+			Runner: RunnerState{
+				First:  true,
+				Second: true,
+				Third:  false,
+			},
+			Outs: 0,
+		}
+		play := Play{
+			Type: "homerun",
+		}
+		next := ApplyPlay(&state, play)
+		s.Equal(0, next.Outs)
+		s.Equal(1, next.Inning)
+		s.Equal(Top, next.InningHalf)
+		s.Equal(3, next.Teams["team1"].Score)
+		s.Equal(0, next.Teams["team2"].Score)
+		s.Equal(false, next.Runner.First)
+		s.Equal(false, next.Runner.Second)
+		s.Equal(false, next.Runner.Third)
+	})
+}
+
+func (s *GameStateSuite) TestApplyPlay_HomerunRunnersOnFirstAndThird() {
+	s.Run("0 outs runners on first and third -> 0 outs no runners with three runs scored", func() {
+		state := GameState {
+			Inning:     1,
+			InningHalf: Top,
+			FirstBattingTeamID:  TeamID("team1"),
+			SecondBattingTeamID: TeamID("team2"),
+			Teams: map[TeamID]*TeamState{
+				"team1": {TeamID: "team1", Score: 0},
+				"team2": {TeamID: "team2", Score: 0},
+			},
+			Runner: RunnerState{
+				First:  true,
+				Second: false,
+				Third:  true,
+			},
+			Outs: 0,
+		}
+		play := Play{
+			Type: "homerun",
+		}
+		next := ApplyPlay(&state, play)
+		s.Equal(0, next.Outs)
+		s.Equal(1, next.Inning)
+		s.Equal(Top, next.InningHalf)
+		s.Equal(3, next.Teams["team1"].Score)
+		s.Equal(0, next.Teams["team2"].Score)
+		s.Equal(false, next.Runner.First)
+		s.Equal(false, next.Runner.Second)
+		s.Equal(false, next.Runner.Third)
+	})
+}
+
+func (s *GameStateSuite) TestApplyPlay_HomerunRunnersOnSecondAndThird() {
+	s.Run("0 outs runners on second and third -> 0 outs no runners with three runs scored", func() {
+		state := GameState {
+			Inning:     1,
+			InningHalf: Top,
+			FirstBattingTeamID:  TeamID("team1"),
+			SecondBattingTeamID: TeamID("team2"),
+			Teams: map[TeamID]*TeamState{
+				"team1": {TeamID: "team1", Score: 0},
+				"team2": {TeamID: "team2", Score: 0},
+			},
+			Runner: RunnerState{
+				First:  false,
+				Second: true,
+				Third:  true,
+			},
+			Outs: 0,
+		}
+		play := Play{
+			Type: "homerun",
+		}
+		next := ApplyPlay(&state, play)
+		s.Equal(0, next.Outs)
+		s.Equal(1, next.Inning)
+		s.Equal(Top, next.InningHalf)
+		s.Equal(3, next.Teams["team1"].Score)
+		s.Equal(0, next.Teams["team2"].Score)
+		s.Equal(false, next.Runner.First)
+		s.Equal(false, next.Runner.Second)
+		s.Equal(false, next.Runner.Third)
+	})
+}
+
+func (s *GameStateSuite) TestApplyPlay_HomerunRunnersOnFirst() {
+	s.Run("0 outs runner on first -> 0 outs no runners with two runs scored", func() {
+		state := GameState {
+			Inning:     1,
+			InningHalf: Top,
+			FirstBattingTeamID:  TeamID("team1"),
+			SecondBattingTeamID: TeamID("team2"),
+			Teams: map[TeamID]*TeamState{
+				"team1": {TeamID: "team1", Score: 0},
+				"team2": {TeamID: "team2", Score: 0},
+			},
+			Runner: RunnerState{
+				First:  true,
+				Second: false,
+				Third:  false,
+			},
+			Outs: 0,
+		}
+		play := Play{
+			Type: "homerun",
+		}
+		next := ApplyPlay(&state, play)
+		s.Equal(0, next.Outs)
+		s.Equal(1, next.Inning)
+		s.Equal(Top, next.InningHalf)
+		s.Equal(2, next.Teams["team1"].Score)
+		s.Equal(0, next.Teams["team2"].Score)
+		s.Equal(false, next.Runner.First)
+		s.Equal(false, next.Runner.Second)
+		s.Equal(false, next.Runner.Third)
+	})
+}
+
+func (s *GameStateSuite) TestApplyPlay_HomerunRunnersOnSecond() {
+	s.Run("0 outs runner on second -> 0 outs no runners with two runs scored", func() {
+		state := GameState {
+			Inning:     1,
+			InningHalf: Top,
+			FirstBattingTeamID:  TeamID("team1"),
+			SecondBattingTeamID: TeamID("team2"),
+			Teams: map[TeamID]*TeamState{
+				"team1": {TeamID: "team1", Score: 0},
+				"team2": {TeamID: "team2", Score: 0},
+			},
+			Runner: RunnerState{
+				First:  false,
+				Second: true,
+				Third:  false,
+			},
+			Outs: 0,
+		}
+		play := Play{
+			Type: "homerun",
+		}
+		next := ApplyPlay(&state, play)
+		s.Equal(0, next.Outs)
+		s.Equal(1, next.Inning)
+		s.Equal(Top, next.InningHalf)
+		s.Equal(2, next.Teams["team1"].Score)
+		s.Equal(0, next.Teams["team2"].Score)
+		s.Equal(false, next.Runner.First)
+		s.Equal(false, next.Runner.Second)
+		s.Equal(false, next.Runner.Third)
+	})
+}
+
+func (s *GameStateSuite) TestApplyPlay_HomerunRunnersOnThird() {
+	s.Run("0 outs runner on third -> 0 outs no runners with two runs scored", func() {
+		state := GameState {
+			Inning:     1,
+			InningHalf: Top,
+			FirstBattingTeamID:  TeamID("team1"),
+			SecondBattingTeamID: TeamID("team2"),
+			Teams: map[TeamID]*TeamState{
+				"team1": {TeamID: "team1", Score: 0},
+				"team2": {TeamID: "team2", Score: 0},
+			},
+			Runner: RunnerState{
+				First:  false,
+				Second: false,
+				Third:  true,
+			},
+			Outs: 0,
+		}
+		play := Play{
+			Type: "homerun",
+		}
+		next := ApplyPlay(&state, play)
+		s.Equal(0, next.Outs)
+		s.Equal(1, next.Inning)
+		s.Equal(Top, next.InningHalf)
+		s.Equal(2, next.Teams["team1"].Score)
+		s.Equal(0, next.Teams["team2"].Score)
+		s.Equal(false, next.Runner.First)
+		s.Equal(false, next.Runner.Second)
+		s.Equal(false, next.Runner.Third)
+	})
+}
+
+func (s *GameStateSuite) TestApplyPlay_HomerunRunnersEmpty() {
+	s.Run("0 outs empty bases -> 0 outs no runners with a run scored", func() {
+		state := NewGameState()
+		play := Play{
+			Type: "homerun",
+		}
+		next := ApplyPlay(state, play)
+		s.Equal(0, next.Outs)
+		s.Equal(1, next.Inning)
+		s.Equal(Top, next.InningHalf)
+		s.Equal(1, next.Teams["team1"].Score)
+		s.Equal(0, next.Teams["team2"].Score)
+		s.Equal(false, next.Runner.First)
+		s.Equal(false, next.Runner.Second)
+		s.Equal(false, next.Runner.Third)
+	})
+}
