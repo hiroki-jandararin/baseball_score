@@ -18,8 +18,12 @@ const (
 	// FieldersChoice PlayType = "fieldersChoice"
 	// DoublePlay PlayType = "doublePlay"
 )
+func RecordPlay(state *GameState, play Play) *GameState {
+	//TODO ValidatePlay(state, play) を追加する
+	return applyPlay(state, play)
+}
 
-func ApplyPlay(state *GameState, play Play) *GameState {
+func applyPlay(state *GameState, play Play) *GameState {
 	next := *state
 
 	switch play.Type {

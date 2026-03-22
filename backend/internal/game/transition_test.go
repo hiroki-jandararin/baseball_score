@@ -6,7 +6,7 @@ func (s *GameStateSuite) TestApplyPlay_StrikeoutIncreasesOuts() {
 		play := Play{
 			Type: Strikeout,
 		}
-		next := ApplyPlay(state, play)
+		next := RecordPlay(state, play)
 		s.Equal(1, next.Outs)
 	})
 }
@@ -32,7 +32,7 @@ func (s *GameStateSuite) TestApplyPlay_StrikeoutOnlyAffectsOuts() {
 		play := Play{
 			Type: Strikeout,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(1, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -65,7 +65,7 @@ func (s *GameStateSuite) TestApplyPlay_ThreeOutsChangeHalfInning() {
 		play := Play{
 			Type: Strikeout,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Bottom, next.InningHalf)
@@ -98,7 +98,7 @@ func (s *GameStateSuite) TestApplyPlay_ThreeOutsChangeInning() {
 		play := Play{
 			Type: Strikeout,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(2, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -131,7 +131,7 @@ func (s *GameStateSuite) TestApplyPlay_flyOutsChangeInningAndScore() {
 		play := Play{
 			Type: Flyout,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(2, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -164,7 +164,7 @@ func (s *GameStateSuite) TestApplyPlay_GroundOutsChangeInning() {
 		play := Play{
 			Type: Groundout,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(2, next.Inning)
 		s.Equal(Bottom, next.InningHalf)
@@ -197,7 +197,7 @@ func (s *GameStateSuite) TestApplyPlay_WalkWithBasesLoadedScoresOne() {
 		play := Play{
 			Type: Walk,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -230,7 +230,7 @@ func (s *GameStateSuite) TestApplyPlay_WalkRunnersOnFirstAndSecond() {
 		play := Play{
 			Type: Walk,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -263,7 +263,7 @@ func (s *GameStateSuite) TestApplyPlay_WalkRunnersOnFirstAndThird() {
 		play := Play{
 			Type: Walk,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -296,7 +296,7 @@ func (s *GameStateSuite) TestApplyPlay_WalkRunnersOnSecondAndThird() {
 		play := Play{
 			Type: Walk,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -329,7 +329,7 @@ func (s *GameStateSuite) TestApplyPlay_WalkRunnerOnFirst() {
 		play := Play{
 			Type: Walk,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -362,7 +362,7 @@ func (s *GameStateSuite) TestApplyPlay_WalkRunnerOnSecond() {
 		play := Play{
 			Type: Walk,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -395,7 +395,7 @@ func (s *GameStateSuite) TestApplyPlay_WalkRunnerOnThird() {
 		play := Play{
 			Type: Walk,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -413,7 +413,7 @@ func (s *GameStateSuite) TestApplyPlay_WalkRunnersEmpty() {
 		play := Play{
 			Type: Walk,
 		}
-		next := ApplyPlay(state, play)
+		next := RecordPlay(state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -431,7 +431,7 @@ func (s *GameStateSuite) TestApplyPlay_HitByPitchPutsRunnersOnFirst() {
 		play := Play{
 			Type: HitByPitch,
 		}
-		next := ApplyPlay(state, play)
+		next := RecordPlay(state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -464,7 +464,7 @@ func (s *GameStateSuite) TestApplyPlay_SingleRunnerOccupied() {
 		play := Play{
 			Type: Single,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -497,7 +497,7 @@ func (s *GameStateSuite) TestApplyPlay_SingleRunnerOnFirstAndSecond() {
 		play := Play{
 			Type: Single,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -530,7 +530,7 @@ func (s *GameStateSuite) TestApplyPlay_SingleRunnerOnFirstAndThird() {
 		play := Play{
 			Type: Single,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -563,7 +563,7 @@ func (s *GameStateSuite) TestApplyPlay_SingleRunnerOnSecondAndThird() {
 		play := Play{
 			Type: Single,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -596,7 +596,7 @@ func (s *GameStateSuite) TestApplyPlay_SingleRunnersOnFirst() {
 		play := Play{
 			Type: Single,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -629,7 +629,7 @@ func (s *GameStateSuite) TestApplyPlay_SingleRunnersOnSecond() {
 		play := Play{
 			Type: Single,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -662,7 +662,7 @@ func (s *GameStateSuite) TestApplyPlay_SingleRunnersOnThird() {
 		play := Play{
 			Type: Single,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -680,7 +680,7 @@ func (s *GameStateSuite) TestApplyPlay_SingleRunnersEmpty() {
 		play := Play{
 			Type: Single,
 		}
-		next := ApplyPlay(state, play)
+		next := RecordPlay(state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -713,7 +713,7 @@ func (s *GameStateSuite) TestApplyPlay_DoubleRunnersOnFirstAndSecondAndThird() {
 		play := Play{
 			Type: Double,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -746,7 +746,7 @@ func (s *GameStateSuite) TestApplyPlay_DoubleRunnersOnFirstAndSecond() {
 		play := Play{
 			Type: Double,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -779,7 +779,7 @@ func (s *GameStateSuite) TestApplyPlay_DoubleRunnersOnFirstAndThird() {
 		play := Play{
 			Type: Double,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -812,7 +812,7 @@ func (s *GameStateSuite) TestApplyPlay_DoubleRunnersOnSecondAndThird() {
 		play := Play{
 			Type: Double,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -845,7 +845,7 @@ func (s *GameStateSuite) TestApplyPlay_DoubleRunnersOnFirst() {
 		play := Play{
 			Type: Double,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -878,7 +878,7 @@ func (s *GameStateSuite) TestApplyPlay_DoubleRunnersOnSecond() {
 		play := Play{
 			Type: Double,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -911,7 +911,7 @@ func (s *GameStateSuite) TestApplyPlay_DoubleRunnersOnThird() {
 		play := Play{
 			Type: Double,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -929,7 +929,7 @@ func (s *GameStateSuite) TestApplyPlay_DoubleRunnersEmpty() {
 		play := Play{
 			Type: Double,
 		}
-		next := ApplyPlay(state, play)
+		next := RecordPlay(state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -962,7 +962,7 @@ func (s *GameStateSuite) TestApplyPlay_TripleRunnersOnFirstAndSecondAndThird() {
 		play := Play{
 			Type: Triple,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -995,7 +995,7 @@ func (s *GameStateSuite) TestApplyPlay_TripleRunnersOnFirstAndSecond() {
 		play := Play{
 			Type: Triple,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -1028,7 +1028,7 @@ func (s *GameStateSuite) TestApplyPlay_TripleRunnersOnFirstAndThird() {
 		play := Play{
 			Type: Triple,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -1061,7 +1061,7 @@ func (s *GameStateSuite) TestApplyPlay_TripleRunnersOnSecondAndThird() {
 		play := Play{
 			Type: Triple,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -1094,7 +1094,7 @@ func (s *GameStateSuite) TestApplyPlay_TripleRunnersOnFirst() {
 		play := Play{
 			Type: Triple,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -1127,7 +1127,7 @@ func (s *GameStateSuite) TestApplyPlay_TripleRunnersOnSecond() {
 		play := Play{
 			Type: Triple,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -1160,7 +1160,7 @@ func (s *GameStateSuite) TestApplyPlay_TripleRunnersOnThird() {
 		play := Play{
 			Type: Triple,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -1178,7 +1178,7 @@ func (s *GameStateSuite) TestApplyPlay_TripleRunnersEmpty() {
 		play := Play{
 			Type: Triple,
 		}
-		next := ApplyPlay(state, play)
+		next := RecordPlay(state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -1211,7 +1211,7 @@ func (s *GameStateSuite) TestApplyPlay_HomerunRunnersOnFirstAndSecondAndThird() 
 		play := Play{
 			Type: HomeRun,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -1244,7 +1244,7 @@ func (s *GameStateSuite) TestApplyPlay_HomerunRunnersOnFirstAndSecond() {
 		play := Play{
 			Type: HomeRun,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -1277,7 +1277,7 @@ func (s *GameStateSuite) TestApplyPlay_HomerunRunnersOnFirstAndThird() {
 		play := Play{
 			Type: HomeRun,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -1310,7 +1310,7 @@ func (s *GameStateSuite) TestApplyPlay_HomerunRunnersOnSecondAndThird() {
 		play := Play{
 			Type: HomeRun,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -1343,7 +1343,7 @@ func (s *GameStateSuite) TestApplyPlay_HomerunRunnersOnFirst() {
 		play := Play{
 			Type: HomeRun,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -1376,7 +1376,7 @@ func (s *GameStateSuite) TestApplyPlay_HomerunRunnersOnSecond() {
 		play := Play{
 			Type: HomeRun,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -1409,7 +1409,7 @@ func (s *GameStateSuite) TestApplyPlay_HomerunRunnersOnThird() {
 		play := Play{
 			Type: HomeRun,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -1427,7 +1427,7 @@ func (s *GameStateSuite) TestApplyPlay_HomerunRunnersEmpty() {
 		play := Play{
 			Type: HomeRun,
 		}
-		next := ApplyPlay(state, play)
+		next := RecordPlay(state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -1460,7 +1460,7 @@ func (s *GameStateSuite) TestApplyPlay_ErrorRunnerOccupied() {
 		play := Play{
 			Type: Error,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -1493,7 +1493,7 @@ func (s *GameStateSuite) TestApplyPlay_ErrorRunnerOnFirstAndSecond() {
 		play := Play{
 			Type: Error,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -1526,7 +1526,7 @@ func (s *GameStateSuite) TestApplyPlay_ErrorRunnerOnFirstAndThird() {
 		play := Play{
 			Type: Error,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -1559,7 +1559,7 @@ func (s *GameStateSuite) TestApplyPlay_ErrorRunnerOnSecondAndThird() {
 		play := Play{
 			Type: Error,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -1592,7 +1592,7 @@ func (s *GameStateSuite) TestApplyPlay_ErrorRunnersOnFirst() {
 		play := Play{
 			Type: Error,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -1625,7 +1625,7 @@ func (s *GameStateSuite) TestApplyPlay_ErrorRunnersOnSecond() {
 		play := Play{
 			Type: Error,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -1658,7 +1658,7 @@ func (s *GameStateSuite) TestApplyPlay_ErrorRunnersOnThird() {
 		play := Play{
 			Type: Error,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -1676,7 +1676,7 @@ func (s *GameStateSuite) TestApplyPlay_ErrorRunnersEmpty() {
 		play := Play{
 			Type: Error,
 		}
-		next := ApplyPlay(state, play)
+		next := RecordPlay(state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -1709,7 +1709,7 @@ func (s *GameStateSuite) TestApplyPlay_SacrificeBuntRunnerOccupied() {
 		play := Play{
 			Type: SacrificeBunt,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(1, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -1742,7 +1742,7 @@ func (s *GameStateSuite) TestApplyPlay_SacrificeBuntRunnerOnFirstAndSecond() {
 		play := Play{
 			Type: SacrificeBunt,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(1, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -1775,7 +1775,7 @@ func (s *GameStateSuite) TestApplyPlay_SacrificeBuntRunnerOnFirstAndThird() {
 		play := Play{
 			Type: SacrificeBunt,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(1, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -1808,7 +1808,7 @@ func (s *GameStateSuite) TestApplyPlay_SacrificeBuntRunnerOnSecondAndThird() {
 		play := Play{
 			Type: SacrificeBunt,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(1, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -1841,7 +1841,7 @@ func (s *GameStateSuite) TestApplyPlay_SacrificeBuntRunnersOnFirst() {
 		play := Play{
 			Type: SacrificeBunt,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(1, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -1874,7 +1874,7 @@ func (s *GameStateSuite) TestApplyPlay_SacrificeBuntRunnersOnSecond() {
 		play := Play{
 			Type: SacrificeBunt,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(1, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -1907,7 +1907,7 @@ func (s *GameStateSuite) TestApplyPlay_SacrificeBuntRunnersOnThird() {
 		play := Play{
 			Type: SacrificeBunt,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(1, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -1925,7 +1925,7 @@ func (s *GameStateSuite) TestApplyPlay_SacrificeBuntRunnersEmpty() {
 		play := Play{
 			Type: SacrificeBunt,
 		}
-		next := ApplyPlay(state, play)
+		next := RecordPlay(state, play)
 		s.Equal(1, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -1958,7 +1958,7 @@ func (s *GameStateSuite) TestApplyPlay_StealRunnerOccupied() {
 		play := Play{
 			Type: Steal,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -1991,7 +1991,7 @@ func (s *GameStateSuite) TestApplyPlay_StealRunnerOnFirstAndSecond() {
 		play := Play{
 			Type: Steal,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -2024,7 +2024,7 @@ func (s *GameStateSuite) TestApplyPlay_StealRunnerOnFirstAndThird() {
 		play := Play{
 			Type: Steal,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -2057,7 +2057,7 @@ func (s *GameStateSuite) TestApplyPlay_StealRunnerOnSecondAndThird() {
 		play := Play{
 			Type: Steal,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -2090,7 +2090,7 @@ func (s *GameStateSuite) TestApplyPlay_StealRunnersOnFirst() {
 		play := Play{
 			Type: Steal,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -2123,7 +2123,7 @@ func (s *GameStateSuite) TestApplyPlay_StealRunnersOnSecond() {
 		play := Play{
 			Type: Steal,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
@@ -2156,7 +2156,7 @@ func (s *GameStateSuite) TestApplyPlay_StealRunnersOnThird() {
 		play := Play{
 			Type: Steal,
 		}
-		next := ApplyPlay(&state, play)
+		next := RecordPlay(&state, play)
 		s.Equal(0, next.Outs)
 		s.Equal(1, next.Inning)
 		s.Equal(Top, next.InningHalf)
