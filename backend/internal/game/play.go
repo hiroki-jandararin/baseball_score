@@ -14,7 +14,7 @@ const (
 	HomeRun  PlayType = "homerun"
 	Error	PlayType = "error"
 	SacrificeBunt PlayType = "sacrificeBunt"
-	// Steal PlayType = "steal"
+	Steal PlayType = "steal"
 	// FieldersChoice PlayType = "fieldersChoice"
 	// DoublePlay PlayType = "doublePlay"
 )
@@ -426,6 +426,55 @@ func ApplyPlay(state *GameState, play Play) *GameState {
 			if next.Outs >= 3 {
 				next.ChangeInning()
 				return &next
+			}
+		}
+		// TODO: どのランナーが盗塁したか明示的にわかるようにする
+		case Steal:
+		if next.Runner.First && next.Runner.Second && next.Runner.Third {
+			next.AddRun(1)
+			next.Runner = RunnerState{
+				First:  false,
+				Second: true,
+				Third:  true,
+			}
+		}else if next.Runner.First && next.Runner.Second {
+			next.Runner = RunnerState{
+				First:  false,
+				Second: true,
+				Third:  true,
+			}
+		}else if next.Runner.First && next.Runner.Third {
+			next.AddRun(1)
+			next.Runner = RunnerState{
+				First:  false,
+				Second: true,
+				Third:  false,
+			}
+		} else if next.Runner.Second && next.Runner.Third {
+			next.AddRun(1)
+			next.Runner = RunnerState{
+				First:  false,
+				Second: false,
+				Third:  true,
+			}
+		} else if next.Runner.First {
+			next.Runner = RunnerState{
+				First:  false,
+				Second: true,
+				Third:  false,
+			}
+		} else if next.Runner.Second {
+			next.Runner = RunnerState{
+				First:  false,
+				Second: false,
+				Third:  true,
+			}
+		} else if next.Runner.Third {
+			next.AddRun(1)
+			next.Runner = RunnerState{
+				First:  false,
+				Second: false,
+				Third:  false,
 			}
 		}
 	}
