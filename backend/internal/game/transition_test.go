@@ -528,7 +528,7 @@ func (s *GameStateSuite) TestApplyPlay_SingleRunnerOnFirstAndThird() {
 			Outs: 0,
 		}
 		play := Play{
-			Type: "single",
+			Type: Single,
 		}
 		next := ApplyPlay(&state, play)
 		s.Equal(0, next.Outs)
@@ -561,7 +561,7 @@ func (s *GameStateSuite) TestApplyPlay_SingleRunnerOnSecondAndThird() {
 			Outs: 0,
 		}
 		play := Play{
-			Type: "single",
+			Type: Single,
 		}
 		next := ApplyPlay(&state, play)
 		s.Equal(0, next.Outs)
@@ -594,7 +594,7 @@ func (s *GameStateSuite) TestApplyPlay_SingleRunnersOnFirst() {
 			Outs: 0,
 		}
 		play := Play{
-			Type: "single",
+			Type: Single,
 		}
 		next := ApplyPlay(&state, play)
 		s.Equal(0, next.Outs)
@@ -627,7 +627,7 @@ func (s *GameStateSuite) TestApplyPlay_SingleRunnersOnSecond() {
 			Outs: 0,
 		}
 		play := Play{
-			Type: "single",
+			Type: Single,
 		}
 		next := ApplyPlay(&state, play)
 		s.Equal(0, next.Outs)
@@ -660,7 +660,7 @@ func (s *GameStateSuite) TestApplyPlay_SingleRunnersOnThird() {
 			Outs: 0,
 		}
 		play := Play{
-			Type: "single",
+			Type: Single,
 		}
 		next := ApplyPlay(&state, play)
 		s.Equal(0, next.Outs)
@@ -678,7 +678,7 @@ func (s *GameStateSuite) TestApplyPlay_SingleRunnersEmpty() {
 	s.Run("0 outs empty bases -> 0 outs runner on first", func() {
 		state := NewGameState()
 		play := Play{
-			Type: "single",
+			Type: Single,
 		}
 		next := ApplyPlay(state, play)
 		s.Equal(0, next.Outs)
@@ -711,7 +711,7 @@ func (s *GameStateSuite) TestApplyPlay_DoubleRunnersOnFirstAndSecondAndThird() {
 			Outs: 0,
 		}
 		play := Play{
-			Type: "double",
+			Type: Double,
 		}
 		next := ApplyPlay(&state, play)
 		s.Equal(0, next.Outs)
@@ -744,7 +744,7 @@ func (s *GameStateSuite) TestApplyPlay_DoubleRunnersOnFirstAndSecond() {
 			Outs: 0,
 		}
 		play := Play{
-			Type: "double",
+			Type: Double,
 		}
 		next := ApplyPlay(&state, play)
 		s.Equal(0, next.Outs)
@@ -777,7 +777,7 @@ func (s *GameStateSuite) TestApplyPlay_DoubleRunnersOnFirstAndThird() {
 			Outs: 0,
 		}
 		play := Play{
-			Type: "double",
+			Type: Double,
 		}
 		next := ApplyPlay(&state, play)
 		s.Equal(0, next.Outs)
@@ -810,7 +810,7 @@ func (s *GameStateSuite) TestApplyPlay_DoubleRunnersOnSecondAndThird() {
 			Outs: 0,
 		}
 		play := Play{
-			Type: "double",
+			Type: Double,
 		}
 		next := ApplyPlay(&state, play)
 		s.Equal(0, next.Outs)
@@ -843,7 +843,7 @@ func (s *GameStateSuite) TestApplyPlay_DoubleRunnersOnFirst() {
 			Outs: 0,
 		}
 		play := Play{
-			Type: "double",
+			Type: Double,
 		}
 		next := ApplyPlay(&state, play)
 		s.Equal(0, next.Outs)
@@ -876,7 +876,7 @@ func (s *GameStateSuite) TestApplyPlay_DoubleRunnersOnSecond() {
 			Outs: 0,
 		}
 		play := Play{
-			Type: "double",
+			Type: Double,
 		}
 		next := ApplyPlay(&state, play)
 		s.Equal(0, next.Outs)
@@ -909,7 +909,7 @@ func (s *GameStateSuite) TestApplyPlay_DoubleRunnersOnThird() {
 			Outs: 0,
 		}
 		play := Play{
-			Type: "double",
+			Type: Double,
 		}
 		next := ApplyPlay(&state, play)
 		s.Equal(0, next.Outs)
@@ -927,7 +927,7 @@ func (s *GameStateSuite) TestApplyPlay_DoubleRunnersEmpty() {
 	s.Run("0 outs empty bases -> 0 outs runner on second", func() {
 		state := NewGameState()
 		play := Play{
-			Type: "double",
+			Type: Double,
 		}
 		next := ApplyPlay(state, play)
 		s.Equal(0, next.Outs)
@@ -960,7 +960,7 @@ func (s *GameStateSuite) TestApplyPlay_TripleRunnersOnFirstAndSecondAndThird() {
 			Outs: 0,
 		}
 		play := Play{
-			Type: "triple",
+			Type: Triple,
 		}
 		next := ApplyPlay(&state, play)
 		s.Equal(0, next.Outs)
@@ -993,7 +993,7 @@ func (s *GameStateSuite) TestApplyPlay_TripleRunnersOnFirstAndSecond() {
 			Outs: 0,
 		}
 		play := Play{
-			Type: "triple",
+			Type: Triple,
 		}
 		next := ApplyPlay(&state, play)
 		s.Equal(0, next.Outs)
@@ -1026,7 +1026,7 @@ func (s *GameStateSuite) TestApplyPlay_TripleRunnersOnFirstAndThird() {
 			Outs: 0,
 		}
 		play := Play{
-			Type: "triple",
+			Type: Triple,
 		}
 		next := ApplyPlay(&state, play)
 		s.Equal(0, next.Outs)
@@ -1059,7 +1059,7 @@ func (s *GameStateSuite) TestApplyPlay_TripleRunnersOnSecondAndThird() {
 			Outs: 0,
 		}
 		play := Play{
-			Type: "triple",
+			Type: Triple,
 		}
 		next := ApplyPlay(&state, play)
 		s.Equal(0, next.Outs)
@@ -1092,7 +1092,7 @@ func (s *GameStateSuite) TestApplyPlay_TripleRunnersOnFirst() {
 			Outs: 0,
 		}
 		play := Play{
-			Type: "triple",
+			Type: Triple,
 		}
 		next := ApplyPlay(&state, play)
 		s.Equal(0, next.Outs)
@@ -1125,7 +1125,7 @@ func (s *GameStateSuite) TestApplyPlay_TripleRunnersOnSecond() {
 			Outs: 0,
 		}
 		play := Play{
-			Type: "triple",
+			Type: Triple,
 		}
 		next := ApplyPlay(&state, play)
 		s.Equal(0, next.Outs)
@@ -1158,7 +1158,7 @@ func (s *GameStateSuite) TestApplyPlay_TripleRunnersOnThird() {
 			Outs: 0,
 		}
 		play := Play{
-			Type: "triple",
+			Type: Triple,
 		}
 		next := ApplyPlay(&state, play)
 		s.Equal(0, next.Outs)
@@ -1176,7 +1176,7 @@ func (s *GameStateSuite) TestApplyPlay_TripleRunnersEmpty() {
 	s.Run("0 outs empty bases -> 0 outs runner on third", func() {
 		state := NewGameState()
 		play := Play{
-			Type: "triple",
+			Type: Triple,
 		}
 		next := ApplyPlay(state, play)
 		s.Equal(0, next.Outs)
@@ -1209,7 +1209,7 @@ func (s *GameStateSuite) TestApplyPlay_HomerunRunnersOnFirstAndSecondAndThird() 
 			Outs: 0,
 		}
 		play := Play{
-			Type: "homerun",
+			Type: HomeRun,
 		}
 		next := ApplyPlay(&state, play)
 		s.Equal(0, next.Outs)
@@ -1242,7 +1242,7 @@ func (s *GameStateSuite) TestApplyPlay_HomerunRunnersOnFirstAndSecond() {
 			Outs: 0,
 		}
 		play := Play{
-			Type: "homerun",
+			Type: HomeRun,
 		}
 		next := ApplyPlay(&state, play)
 		s.Equal(0, next.Outs)
@@ -1275,7 +1275,7 @@ func (s *GameStateSuite) TestApplyPlay_HomerunRunnersOnFirstAndThird() {
 			Outs: 0,
 		}
 		play := Play{
-			Type: "homerun",
+			Type: HomeRun,
 		}
 		next := ApplyPlay(&state, play)
 		s.Equal(0, next.Outs)
@@ -1308,7 +1308,7 @@ func (s *GameStateSuite) TestApplyPlay_HomerunRunnersOnSecondAndThird() {
 			Outs: 0,
 		}
 		play := Play{
-			Type: "homerun",
+			Type: HomeRun,
 		}
 		next := ApplyPlay(&state, play)
 		s.Equal(0, next.Outs)
@@ -1341,7 +1341,7 @@ func (s *GameStateSuite) TestApplyPlay_HomerunRunnersOnFirst() {
 			Outs: 0,
 		}
 		play := Play{
-			Type: "homerun",
+			Type: HomeRun,
 		}
 		next := ApplyPlay(&state, play)
 		s.Equal(0, next.Outs)
@@ -1374,7 +1374,7 @@ func (s *GameStateSuite) TestApplyPlay_HomerunRunnersOnSecond() {
 			Outs: 0,
 		}
 		play := Play{
-			Type: "homerun",
+			Type: HomeRun,
 		}
 		next := ApplyPlay(&state, play)
 		s.Equal(0, next.Outs)
@@ -1407,7 +1407,7 @@ func (s *GameStateSuite) TestApplyPlay_HomerunRunnersOnThird() {
 			Outs: 0,
 		}
 		play := Play{
-			Type: "homerun",
+			Type: HomeRun,
 		}
 		next := ApplyPlay(&state, play)
 		s.Equal(0, next.Outs)
@@ -1425,7 +1425,7 @@ func (s *GameStateSuite) TestApplyPlay_HomerunRunnersEmpty() {
 	s.Run("0 outs empty bases -> 0 outs no runners with a run scored", func() {
 		state := NewGameState()
 		play := Play{
-			Type: "homerun",
+			Type: HomeRun,
 		}
 		next := ApplyPlay(state, play)
 		s.Equal(0, next.Outs)
