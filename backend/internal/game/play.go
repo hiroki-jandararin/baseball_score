@@ -12,7 +12,7 @@ const (
 	Double   PlayType = "double"
 	Triple   PlayType = "triple"
 	HomeRun  PlayType = "homerun"
-	// Error	PlayType = "error"
+	Error	PlayType = "error"
 	// SacrificeBunt PlayType = "sacrificeBunt"
 	// Steal PlayType = "steal"
 	// FieldersChoice PlayType = "fieldersChoice"
@@ -295,6 +295,56 @@ func ApplyPlay(state *GameState, play Play) *GameState {
 				Second: false,
 				Third:  false,
 			}
+		}
+		case Error:
+		if next.Runner.First && next.Runner.Second && next.Runner.Third {
+			next.AddRun(1)
+			next.Runner = RunnerState{
+				First:  true,
+				Second: true,
+				Third:  true,
+			}
+		}else if next.Runner.First && next.Runner.Second {
+			next.Runner = RunnerState{
+				First:  true,
+				Second: true,
+				Third:  true,
+			}
+		}else if next.Runner.First && next.Runner.Third {
+			next.AddRun(1)
+			next.Runner = RunnerState{
+				First:  true,
+				Second: true,
+				Third:  false,
+			}
+		} else if next.Runner.Second && next.Runner.Third {
+			next.AddRun(1)
+			next.Runner = RunnerState{
+				First:  true,
+				Second: false,
+				Third:  true,
+			}
+		} else if next.Runner.First {
+			next.Runner = RunnerState{
+				First:  true,
+				Second: true,
+				Third:  false,
+			}
+		} else if next.Runner.Second {
+			next.Runner = RunnerState{
+				First:  true,
+				Second: false,
+				Third:  true,
+			}
+		} else if next.Runner.Third {
+			next.AddRun(1)
+			next.Runner = RunnerState{
+				First:  true,
+				Second: false,
+				Third:  false,
+			}
+		} else {
+			next.Runner.First = true
 		}		
 	}
 
