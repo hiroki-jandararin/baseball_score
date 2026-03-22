@@ -15,6 +15,7 @@ const (
 	Error	PlayType = "error"
 	SacrificeBunt PlayType = "sacrificeBunt"
 	Steal PlayType = "steal"
+	// TODO ランナーの状態を持てるようにして固定ルール以外のプレイも記録できるようにする
 	// FieldersChoice PlayType = "fieldersChoice"
 	// DoublePlay PlayType = "doublePlay"
 )
