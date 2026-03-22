@@ -13,7 +13,7 @@ const (
 	Triple   PlayType = "triple"
 	HomeRun  PlayType = "homerun"
 	Error	PlayType = "error"
-	// SacrificeBunt PlayType = "sacrificeBunt"
+	SacrificeBunt PlayType = "sacrificeBunt"
 	// Steal PlayType = "steal"
 	// FieldersChoice PlayType = "fieldersChoice"
 	// DoublePlay PlayType = "doublePlay"
@@ -26,15 +26,8 @@ func ApplyPlay(state *GameState, play Play) *GameState {
 	case Strikeout, Flyout, Groundout:
 		next.Outs++
 		if next.Outs >= 3 {
-			next.Outs = 0
-			if next.InningHalf == Top {
-				next.InningHalf = Bottom
-				next.Runner = RunnerState{}
-			} else {
-				next.InningHalf = Top
-				next.Inning++
-				next.Runner = RunnerState{}
-			}
+			next.ChangeInning()
+			return &next
 		}
 	case Walk, HitByPitch:
 		if next.Runner.First && next.Runner.Second && next.Runner.Third {
@@ -345,8 +338,108 @@ func ApplyPlay(state *GameState, play Play) *GameState {
 			}
 		} else {
 			next.Runner.First = true
-		}		
+		}	
+		case SacrificeBunt:
+		if next.Runner.First && next.Runner.Second && next.Runner.Third {
+			next.Outs++
+			if next.Outs >= 3 {
+				next.ChangeInning()
+				return &next
+			}
+			next.AddRun(1)
+			next.Runner = RunnerState{
+				First:  false,
+				Second: true,
+				Third:  true,
+			}
+		}else if next.Runner.First && next.Runner.Second {
+			next.Outs++
+			if next.Outs >= 3 {
+				next.ChangeInning()
+				return &next
+			}
+			next.Runner = RunnerState{
+				First:  false,
+				Second: true,
+				Third:  true,
+			}
+		}else if next.Runner.First && next.Runner.Third {
+			next.Outs++
+			if next.Outs >= 3 {
+				next.ChangeInning()
+				return &next
+			}
+			next.AddRun(1)
+			next.Runner = RunnerState{
+				First:  false,
+				Second: true,
+				Third:  false,
+			}
+		} else if next.Runner.Second && next.Runner.Third {
+			next.Outs++
+			if next.Outs >= 3 {
+				next.ChangeInning()
+				return &next
+			}
+			next.AddRun(1)
+			next.Runner = RunnerState{
+				First:  false,
+				Second: false,
+				Third:  true,
+			}
+		} else if next.Runner.First {
+			next.Outs++
+			if next.Outs >= 3 {
+				next.ChangeInning()
+				return &next
+			}
+			next.Runner = RunnerState{
+				First:  false,
+				Second: true,
+				Third:  false,
+			}
+		} else if next.Runner.Second {
+			next.Outs++
+			if next.Outs >= 3 {
+				next.ChangeInning()
+				return &next
+			}
+			next.Runner = RunnerState{
+				First:  false,
+				Second: false,
+				Third:  true,
+			}
+		} else if next.Runner.Third {
+			next.Outs++
+			if next.Outs >= 3 {
+				next.ChangeInning()
+				return &next
+			}
+			next.AddRun(1)
+			next.Runner = RunnerState{
+				First:  false,
+				Second: false,
+				Third:  false,
+			}
+		} else {
+			next.Outs++
+			if next.Outs >= 3 {
+				next.ChangeInning()
+				return &next
+			}
+		}
 	}
-
 	return &next
+}
+
+func (s *GameState) ChangeInning() {
+	s.Outs = 0
+	if s.InningHalf == Top {
+		s.InningHalf = Bottom
+		s.Runner = RunnerState{}
+	} else {
+		s.InningHalf = Top
+		s.Inning++
+		s.Runner = RunnerState{}
+	}
 }

@@ -1687,3 +1687,252 @@ func (s *GameStateSuite) TestApplyPlay_ErrorRunnersEmpty() {
 		s.Equal(false, next.Runner.Third)
 	})
 }
+
+func (s *GameStateSuite) TestApplyPlay_SacrificeBuntRunnerOccupied() {
+	s.Run("0 outs runners on first, second and third -> 1 out runners on second and third with 1 run scored", func() {
+		state := GameState {
+			Inning:     1,
+			InningHalf: Top,
+			FirstBattingTeamID:  TeamID("team1"),
+			SecondBattingTeamID: TeamID("team2"),
+			Teams: map[TeamID]*TeamState{
+				"team1": {TeamID: "team1", Score: 0},
+				"team2": {TeamID: "team2", Score: 0},
+			},
+			Runner: RunnerState{
+				First:  true,
+				Second: true,
+				Third:  true,
+			},
+			Outs: 0,
+		}
+		play := Play{
+			Type: SacrificeBunt,
+		}
+		next := ApplyPlay(&state, play)
+		s.Equal(1, next.Outs)
+		s.Equal(1, next.Inning)
+		s.Equal(Top, next.InningHalf)
+		s.Equal(1, next.Teams["team1"].Score)
+		s.Equal(0, next.Teams["team2"].Score)
+		s.Equal(false, next.Runner.First)
+		s.Equal(true, next.Runner.Second)
+		s.Equal(true, next.Runner.Third)
+	})
+}
+
+func (s *GameStateSuite) TestApplyPlay_SacrificeBuntRunnerOnFirstAndSecond() {
+	s.Run("0 outs runners on first and second -> 1 out runners on second and third", func() {
+		state := GameState {
+			Inning:     1,
+			InningHalf: Top,
+			FirstBattingTeamID:  TeamID("team1"),
+			SecondBattingTeamID: TeamID("team2"),
+			Teams: map[TeamID]*TeamState{
+				"team1": {TeamID: "team1", Score: 0},
+				"team2": {TeamID: "team2", Score: 0},
+			},
+			Runner: RunnerState{
+				First:  true,
+				Second: true,
+				Third:  false,
+			},
+			Outs: 0,
+		}
+		play := Play{
+			Type: SacrificeBunt,
+		}
+		next := ApplyPlay(&state, play)
+		s.Equal(1, next.Outs)
+		s.Equal(1, next.Inning)
+		s.Equal(Top, next.InningHalf)
+		s.Equal(0, next.Teams["team1"].Score)
+		s.Equal(0, next.Teams["team2"].Score)
+		s.Equal(false, next.Runner.First)
+		s.Equal(true, next.Runner.Second)
+		s.Equal(true, next.Runner.Third)
+	})	
+}
+
+func (s *GameStateSuite) TestApplyPlay_SacrificeBuntRunnerOnFirstAndThird() {
+	s.Run("0 outs runners on first and third -> 1 out runners on second with a run scored", func() {
+		state := GameState {
+			Inning:     1,
+			InningHalf: Top,
+			FirstBattingTeamID:  TeamID("team1"),
+			SecondBattingTeamID: TeamID("team2"),
+			Teams: map[TeamID]*TeamState{
+				"team1": {TeamID: "team1", Score: 0},
+				"team2": {TeamID: "team2", Score: 0},
+			},
+			Runner: RunnerState{
+				First:  true,
+				Second: false,
+				Third:  true,
+			},
+			Outs: 0,
+		}
+		play := Play{
+			Type: SacrificeBunt,
+		}
+		next := ApplyPlay(&state, play)
+		s.Equal(1, next.Outs)
+		s.Equal(1, next.Inning)
+		s.Equal(Top, next.InningHalf)
+		s.Equal(1, next.Teams["team1"].Score)
+		s.Equal(0, next.Teams["team2"].Score)
+		s.Equal(false, next.Runner.First)
+		s.Equal(true, next.Runner.Second)
+		s.Equal(false, next.Runner.Third)
+	})	
+}
+
+func (s *GameStateSuite) TestApplyPlay_SacrificeBuntRunnerOnSecondAndThird() {
+	s.Run("0 outs runners on second and third -> 1 outs runner on third with a run scored", func() {
+		state := GameState {
+			Inning:     1,
+			InningHalf: Top,
+			FirstBattingTeamID:  TeamID("team1"),
+			SecondBattingTeamID: TeamID("team2"),
+			Teams: map[TeamID]*TeamState{
+				"team1": {TeamID: "team1", Score: 0},
+				"team2": {TeamID: "team2", Score: 0},
+			},
+			Runner: RunnerState{
+				First:  false,
+				Second: true,
+				Third:  true,
+			},
+			Outs: 0,
+		}
+		play := Play{
+			Type: SacrificeBunt,
+		}
+		next := ApplyPlay(&state, play)
+		s.Equal(1, next.Outs)
+		s.Equal(1, next.Inning)
+		s.Equal(Top, next.InningHalf)
+		s.Equal(1, next.Teams["team1"].Score)
+		s.Equal(0, next.Teams["team2"].Score)
+		s.Equal(false, next.Runner.First)
+		s.Equal(false, next.Runner.Second)
+		s.Equal(true, next.Runner.Third)
+	})	
+}
+
+func (s *GameStateSuite) TestApplyPlay_SacrificeBuntRunnersOnFirst() {
+	s.Run("0 outs runner on first -> 1 out runners on second", func() {
+		state := GameState {
+			Inning:     1,
+			InningHalf: Top,
+			FirstBattingTeamID:  TeamID("team1"),
+			SecondBattingTeamID: TeamID("team2"),
+			Teams: map[TeamID]*TeamState{
+				"team1": {TeamID: "team1", Score: 0},
+				"team2": {TeamID: "team2", Score: 0},
+			},
+			Runner: RunnerState{
+				First:  true,
+				Second: false,
+				Third:  false,
+			},
+			Outs: 0,
+		}
+		play := Play{
+			Type: SacrificeBunt,
+		}
+		next := ApplyPlay(&state, play)
+		s.Equal(1, next.Outs)
+		s.Equal(1, next.Inning)
+		s.Equal(Top, next.InningHalf)
+		s.Equal(0, next.Teams["team1"].Score)
+		s.Equal(0, next.Teams["team2"].Score)
+		s.Equal(false, next.Runner.First)
+		s.Equal(true, next.Runner.Second)
+		s.Equal(false, next.Runner.Third)
+	})	
+}
+
+func (s *GameStateSuite) TestApplyPlay_SacrificeBuntRunnersOnSecond() {
+	s.Run("0 outs runner on second -> 0 outs runners on third", func() {
+		state := GameState {
+			Inning:     1,
+			InningHalf: Top,
+			FirstBattingTeamID:  TeamID("team1"),
+			SecondBattingTeamID: TeamID("team2"),
+			Teams: map[TeamID]*TeamState{
+				"team1": {TeamID: "team1", Score: 0},
+				"team2": {TeamID: "team2", Score: 0},
+			},
+			Runner: RunnerState{
+				First:  false,
+				Second: true,
+				Third:  false,
+			},
+			Outs: 0,
+		}
+		play := Play{
+			Type: SacrificeBunt,
+		}
+		next := ApplyPlay(&state, play)
+		s.Equal(1, next.Outs)
+		s.Equal(1, next.Inning)
+		s.Equal(Top, next.InningHalf)
+		s.Equal(0, next.Teams["team1"].Score)
+		s.Equal(0, next.Teams["team2"].Score)
+		s.Equal(false, next.Runner.First)
+		s.Equal(false, next.Runner.Second)
+		s.Equal(true, next.Runner.Third)
+	})	
+}
+
+func (s *GameStateSuite) TestApplyPlay_SacrificeBuntRunnersOnThird() {
+	s.Run("0 outs runner on third -> 1 out no runners with a run scored", func() {
+		state := GameState {
+			Inning:     1,
+			InningHalf: Top,
+			FirstBattingTeamID:  TeamID("team1"),
+			SecondBattingTeamID: TeamID("team2"),
+			Teams: map[TeamID]*TeamState{
+				"team1": {TeamID: "team1", Score: 0},
+				"team2": {TeamID: "team2", Score: 0},
+			},
+			Runner: RunnerState{
+				First:  false,
+				Second: false,
+				Third:  true,
+			},
+			Outs: 0,
+		}
+		play := Play{
+			Type: SacrificeBunt,
+		}
+		next := ApplyPlay(&state, play)
+		s.Equal(1, next.Outs)
+		s.Equal(1, next.Inning)
+		s.Equal(Top, next.InningHalf)
+		s.Equal(1, next.Teams["team1"].Score)
+		s.Equal(0, next.Teams["team2"].Score)
+		s.Equal(false, next.Runner.First)
+		s.Equal(false, next.Runner.Second)
+		s.Equal(false, next.Runner.Third)
+	})
+}
+
+func (s *GameStateSuite) TestApplyPlay_SacrificeBuntRunnersEmpty() {
+	s.Run("0 outs empty bases -> 1 out no runners", func() {
+		state := NewGameState()
+		play := Play{
+			Type: SacrificeBunt,
+		}
+		next := ApplyPlay(state, play)
+		s.Equal(1, next.Outs)
+		s.Equal(1, next.Inning)
+		s.Equal(Top, next.InningHalf)
+		s.Equal(0, next.Teams["team1"].Score)
+		s.Equal(0, next.Teams["team2"].Score)
+		s.Equal(false, next.Runner.First)
+		s.Equal(false, next.Runner.Second)
+		s.Equal(false, next.Runner.Third)
+	})
+}
