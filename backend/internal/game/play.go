@@ -3,22 +3,23 @@ package game
 type PlayType string
 
 const (
-	Strikeout PlayType = "strikeout"
-	Flyout    PlayType = "flyout"
-	Groundout PlayType = "groundout"
-	Walk      PlayType = "walk"
-	HitByPitch PlayType = "hitByPitch"
-	Single   PlayType = "single"
-	Double   PlayType = "double"
-	Triple   PlayType = "triple"
-	HomeRun  PlayType = "homerun"
-	Error	PlayType = "error"
+	Strikeout     PlayType = "strikeout"
+	Flyout        PlayType = "flyout"
+	Groundout     PlayType = "groundout"
+	Walk          PlayType = "walk"
+	HitByPitch    PlayType = "hitByPitch"
+	Single        PlayType = "single"
+	Double        PlayType = "double"
+	Triple        PlayType = "triple"
+	HomeRun       PlayType = "homerun"
+	Error         PlayType = "error"
 	SacrificeBunt PlayType = "sacrificeBunt"
-	Steal PlayType = "steal"
+	Steal         PlayType = "steal"
 	// TODO ランナーの状態を持てるようにして固定ルール以外のプレイも記録できるようにする
 	// FieldersChoice PlayType = "fieldersChoice"
 	// DoublePlay PlayType = "doublePlay"
 )
+
 func RecordPlay(state *GameState, play Play) *GameState {
 	//TODO ValidatePlay(state, play) を追加する
 	return applyPlay(state, play)
@@ -31,24 +32,18 @@ func applyPlay(state *GameState, play Play) *GameState {
 		if addOut(&next) {
 			return &next
 		}
-	case Walk, HitByPitch:
-		handleWalk(&next)
-	case Single:
-		handleSingle(&next)
-	case Double:
-		handleDouble(&next)
-	case Triple:
-		handleTriple(&next)
-	case HomeRun:
-		handleHomeRun(&next)
-	case Error:
-		handleError(&next)
-	case SacrificeBunt:
-		if addSacrificeBunt(&next) {
+	default:
+		preset, ok := presetForPlay(state.Runner, play.Type)
+		if !ok {
 			return &next
 		}
-	case Steal:
-		handleSteal(&next)
+		for i := 0; i < preset.outs; i++ {
+			if addOut(&next) {
+				return &next
+			}
+		}
+		advancement := mergeAdvancement(preset.advancement, play.Override)
+		applyAdvancement(&next, advancement)
 	}
 	return &next
 }
@@ -62,232 +57,279 @@ func addOut(s *GameState) bool {
 	return false
 }
 
-func handleWalk(s *GameState) {
-	if s.Runner.First && s.Runner.Second && s.Runner.Third {
-		s.AddRun(1)
-		s.Runner = RunnerState{First: true, Second: true, Third: true}
-	} else if s.Runner.First && s.Runner.Second {
-		s.Runner = RunnerState{First: true, Second: true, Third: true}
-	} else if s.Runner.First && s.Runner.Third {
-		s.Runner = RunnerState{First: true, Second: true, Third: true}
-	} else if s.Runner.Second && s.Runner.Third {
-		s.Runner = RunnerState{First: true, Second: true, Third: true}
-	} else if s.Runner.First {
-		s.Runner = RunnerState{First: true, Second: true, Third: false}
-	} else if s.Runner.Second {
-		s.Runner = RunnerState{First: true, Second: true, Third: false}
-	} else if s.Runner.Third {
-		s.Runner = RunnerState{First: true, Second: false, Third: true}
-	} else {
-		s.Runner.First = true
+type preset struct {
+	advancement Advancement
+	outs        int
+}
+
+func presetForPlay(runner RunnerState, playType PlayType) (preset, bool) {
+	switch playType {
+	case Walk, HitByPitch:
+		return preset{advancement: walkAdvancement(runner)}, true
+	case Single:
+		return preset{advancement: singleAdvancement(runner)}, true
+	case Double:
+		return preset{advancement: doubleAdvancement(runner)}, true
+	case Triple:
+		return preset{advancement: tripleAdvancement(runner)}, true
+	case HomeRun:
+		return preset{advancement: homeRunAdvancement(runner)}, true
+	case Error:
+		return preset{advancement: errorAdvancement(runner)}, true
+	case SacrificeBunt:
+		return preset{advancement: sacrificeBuntAdvancement(runner), outs: 1}, true
+	case Steal:
+		return preset{advancement: stealAdvancement(runner)}, true
+	default:
+		return preset{}, false
 	}
 }
 
-func handleSingle(s *GameState) {
-	if s.Runner.First && s.Runner.Second && s.Runner.Third {
-		s.AddRun(1)
-		s.Runner = RunnerState{First: true, Second: true, Third: true}
-	} else if s.Runner.First && s.Runner.Second {
-		s.Runner = RunnerState{First: true, Second: true, Third: true}
-	} else if s.Runner.First && s.Runner.Third {
-		s.AddRun(1)
-		s.Runner = RunnerState{First: true, Second: true, Third: false}
-	} else if s.Runner.Second && s.Runner.Third {
-		s.AddRun(1)
-		s.Runner = RunnerState{First: true, Second: false, Third: true}
-	} else if s.Runner.First {
-		s.Runner = RunnerState{First: true, Second: true, Third: false}
-	} else if s.Runner.Second {
-		s.Runner = RunnerState{First: true, Second: false, Third: true}
-	} else if s.Runner.Third {
-		s.AddRun(1)
-		s.Runner = RunnerState{First: true, Second: false, Third: false}
-	} else {
-		s.Runner.First = true
+func walkAdvancement(r RunnerState) Advancement {
+	a := Advancement{Batter: destinationPtr(DestinationFirst)}
+	if r.First {
+		a.FromFirst = destinationPtr(DestinationSecond)
+	}
+	if r.Second {
+		if r.First {
+			a.FromSecond = destinationPtr(DestinationThird)
+		} else {
+			a.FromSecond = destinationPtr(DestinationSecond)
+		}
+	}
+	if r.Third {
+		if r.First && r.Second {
+			a.FromThird = destinationPtr(DestinationHome)
+		} else {
+			a.FromThird = destinationPtr(DestinationThird)
+		}
+	}
+	return a
+}
+
+func singleAdvancement(r RunnerState) Advancement {
+	a := Advancement{Batter: destinationPtr(DestinationFirst)}
+	if r.First {
+		a.FromFirst = destinationPtr(DestinationSecond)
+	}
+	if r.Second {
+		a.FromSecond = destinationPtr(DestinationThird)
+	}
+	if r.Third {
+		if r.Second {
+			a.FromThird = destinationPtr(DestinationThird)
+		} else {
+			a.FromThird = destinationPtr(DestinationHome)
+		}
+	}
+	if r.First && r.Second {
+		a.FromSecond = destinationPtr(DestinationThird)
+	}
+	if r.First && r.Second && r.Third {
+		a.FromThird = destinationPtr(DestinationHome)
+	}
+	if r.First && r.Third && !r.Second {
+		a.FromThird = destinationPtr(DestinationHome)
+	}
+	if r.Second && r.Third && !r.First {
+		a.FromSecond = destinationPtr(DestinationHome)
+		a.FromThird = destinationPtr(DestinationThird)
+	}
+	return a
+}
+
+func doubleAdvancement(r RunnerState) Advancement {
+	a := Advancement{Batter: destinationPtr(DestinationSecond)}
+	if r.First {
+		if r.Second || r.Third {
+			a.FromFirst = destinationPtr(DestinationThird)
+		} else {
+			a.FromFirst = destinationPtr(DestinationThird)
+		}
+	}
+	if r.Second {
+		a.FromSecond = destinationPtr(DestinationHome)
+	}
+	if r.Third {
+		a.FromThird = destinationPtr(DestinationHome)
+	}
+	if r.First && r.Second && r.Third {
+		a.FromFirst = destinationPtr(DestinationThird)
+	}
+	if r.First && r.Second && !r.Third {
+		a.FromFirst = destinationPtr(DestinationThird)
+		a.FromSecond = destinationPtr(DestinationHome)
+	}
+	if r.First && r.Third && !r.Second {
+		a.FromFirst = destinationPtr(DestinationThird)
+	}
+	if r.Second && r.Third && !r.First {
+		a.FromSecond = destinationPtr(DestinationHome)
+		a.FromThird = destinationPtr(DestinationHome)
+	}
+	return a
+}
+
+func tripleAdvancement(r RunnerState) Advancement {
+	a := Advancement{Batter: destinationPtr(DestinationThird)}
+	if r.First {
+		a.FromFirst = destinationPtr(DestinationHome)
+	}
+	if r.Second {
+		a.FromSecond = destinationPtr(DestinationHome)
+	}
+	if r.Third {
+		a.FromThird = destinationPtr(DestinationHome)
+	}
+	return a
+}
+
+func homeRunAdvancement(r RunnerState) Advancement {
+	a := Advancement{Batter: destinationPtr(DestinationHome)}
+	if r.First {
+		a.FromFirst = destinationPtr(DestinationHome)
+	}
+	if r.Second {
+		a.FromSecond = destinationPtr(DestinationHome)
+	}
+	if r.Third {
+		a.FromThird = destinationPtr(DestinationHome)
+	}
+	return a
+}
+
+func errorAdvancement(r RunnerState) Advancement {
+	a := Advancement{Batter: destinationPtr(DestinationFirst)}
+	if r.First {
+		a.FromFirst = destinationPtr(DestinationSecond)
+	}
+	if r.Second {
+		if r.First {
+			a.FromSecond = destinationPtr(DestinationThird)
+		} else {
+			a.FromSecond = destinationPtr(DestinationThird)
+		}
+	}
+	if r.Third {
+		if r.Second {
+			a.FromThird = destinationPtr(DestinationHome)
+		} else {
+			a.FromThird = destinationPtr(DestinationHome)
+		}
+	}
+	if r.Second && !r.First {
+		a.FromSecond = destinationPtr(DestinationThird)
+	}
+	if r.Second && !r.First && !r.Third {
+		a.FromSecond = destinationPtr(DestinationThird)
+	}
+	if r.Second && !r.First && r.Third {
+		a.FromSecond = destinationPtr(DestinationThird)
+	}
+	return a
+}
+
+func sacrificeBuntAdvancement(r RunnerState) Advancement {
+	a := Advancement{Batter: destinationPtr(DestinationOut)}
+	if r.First {
+		a.FromFirst = destinationPtr(DestinationSecond)
+	}
+	if r.Second {
+		if r.First {
+			a.FromSecond = destinationPtr(DestinationThird)
+		} else {
+			a.FromSecond = destinationPtr(DestinationThird)
+		}
+	}
+	if r.Third {
+		if r.First || r.Second {
+			a.FromThird = destinationPtr(DestinationHome)
+		} else {
+			a.FromThird = destinationPtr(DestinationHome)
+		}
+	}
+	if !r.First && !r.Second && !r.Third {
+		a.Batter = destinationPtr(DestinationOut)
+	}
+	return a
+}
+
+func stealAdvancement(r RunnerState) Advancement {
+	a := Advancement{}
+	if r.First {
+		a.FromFirst = destinationPtr(DestinationSecond)
+	}
+	if r.Second {
+		a.FromSecond = destinationPtr(DestinationThird)
+	}
+	if r.Third {
+		a.FromThird = destinationPtr(DestinationHome)
+	}
+	if r.Second && !r.First {
+		a.FromSecond = destinationPtr(DestinationThird)
+	}
+	return a
+}
+
+func mergeAdvancement(base Advancement, override *Advancement) Advancement {
+	if override == nil {
+		return base
+	}
+	if override.Batter != nil {
+		base.Batter = override.Batter
+	}
+	if override.FromFirst != nil {
+		base.FromFirst = override.FromFirst
+	}
+	if override.FromSecond != nil {
+		base.FromSecond = override.FromSecond
+	}
+	if override.FromThird != nil {
+		base.FromThird = override.FromThird
+	}
+	return base
+}
+
+func applyAdvancement(s *GameState, a Advancement) {
+	nextRunner := RunnerState{}
+	runs := 0
+
+	if a.Batter != nil {
+		placeDestination(*a.Batter, &nextRunner, &runs)
+	}
+	if s.Runner.First && a.FromFirst != nil {
+		placeDestination(*a.FromFirst, &nextRunner, &runs)
+	}
+	if s.Runner.Second && a.FromSecond != nil {
+		placeDestination(*a.FromSecond, &nextRunner, &runs)
+	}
+	if s.Runner.Third && a.FromThird != nil {
+		placeDestination(*a.FromThird, &nextRunner, &runs)
+	}
+
+	s.Runner = nextRunner
+	if runs > 0 {
+		s.AddRun(runs)
 	}
 }
 
-func handleDouble(s *GameState) {
-	if s.Runner.First && s.Runner.Second && s.Runner.Third {
-		s.AddRun(2)
-		s.Runner = RunnerState{First: false, Second: true, Third: true}
-	} else if s.Runner.First && s.Runner.Second {
-		s.AddRun(1)
-		s.Runner = RunnerState{First: false, Second: true, Third: true}
-	} else if s.Runner.First && s.Runner.Third {
-		s.AddRun(1)
-		s.Runner = RunnerState{First: false, Second: true, Third: true}
-	} else if s.Runner.Second && s.Runner.Third {
-		s.AddRun(2)
-		s.Runner = RunnerState{First: false, Second: true, Third: false}
-	} else if s.Runner.First {
-		s.Runner = RunnerState{First: false, Second: true, Third: true}
-	} else if s.Runner.Second {
-		s.AddRun(1)
-		s.Runner = RunnerState{First: false, Second: true, Third: false}
-	} else if s.Runner.Third {
-		s.AddRun(1)
-		s.Runner = RunnerState{First: false, Second: true, Third: false}
-	} else {
-		s.Runner.Second = true
+func placeDestination(destination BaseDestination, runner *RunnerState, runs *int) {
+	switch destination {
+	case DestinationFirst:
+		runner.First = true
+	case DestinationSecond:
+		runner.Second = true
+	case DestinationThird:
+		runner.Third = true
+	case DestinationHome:
+		*runs++
+	case DestinationOut:
+		return
 	}
 }
 
-func handleTriple(s *GameState) {
-	if s.Runner.First && s.Runner.Second && s.Runner.Third {
-		s.AddRun(3)
-		s.Runner = RunnerState{First: false, Second: false, Third: true}
-	} else if s.Runner.First && s.Runner.Second {
-		s.AddRun(2)
-		s.Runner = RunnerState{First: false, Second: false, Third: true}
-	} else if s.Runner.First && s.Runner.Third {
-		s.AddRun(2)
-		s.Runner = RunnerState{First: false, Second: false, Third: true}
-	} else if s.Runner.Second && s.Runner.Third {
-		s.AddRun(2)
-		s.Runner = RunnerState{First: false, Second: false, Third: true}
-	} else if s.Runner.First {
-		s.AddRun(1)
-		s.Runner = RunnerState{First: false, Second: false, Third: true}
-	} else if s.Runner.Second {
-		s.AddRun(1)
-		s.Runner = RunnerState{First: false, Second: false, Third: true}
-	} else if s.Runner.Third {
-		s.AddRun(1)
-		s.Runner = RunnerState{First: false, Second: false, Third: true}
-	} else {
-		s.Runner.Third = true
-	}
-}
-
-func handleHomeRun(s *GameState) {
-	if s.Runner.First && s.Runner.Second && s.Runner.Third {
-		s.AddRun(4)
-		s.Runner = RunnerState{First: false, Second: false, Third: false}
-	} else if s.Runner.First && s.Runner.Second {
-		s.AddRun(3)
-		s.Runner = RunnerState{First: false, Second: false, Third: false}
-	} else if s.Runner.First && s.Runner.Third {
-		s.AddRun(3)
-		s.Runner = RunnerState{First: false, Second: false, Third: false}
-	} else if s.Runner.Second && s.Runner.Third {
-		s.AddRun(3)
-		s.Runner = RunnerState{First: false, Second: false, Third: false}
-	} else if s.Runner.First {
-		s.AddRun(2)
-		s.Runner = RunnerState{First: false, Second: false, Third: false}
-	} else if s.Runner.Second {
-		s.AddRun(2)
-		s.Runner = RunnerState{First: false, Second: false, Third: false}
-	} else if s.Runner.Third {
-		s.AddRun(2)
-		s.Runner = RunnerState{First: false, Second: false, Third: false}
-	} else {
-		s.AddRun(1)
-		s.Runner = RunnerState{First: false, Second: false, Third: false}
-	}
-}
-
-func handleError(s *GameState) {
-	if s.Runner.First && s.Runner.Second && s.Runner.Third {
-		s.AddRun(1)
-		s.Runner = RunnerState{First: true, Second: true, Third: true}
-	} else if s.Runner.First && s.Runner.Second {
-		s.Runner = RunnerState{First: true, Second: true, Third: true}
-	} else if s.Runner.First && s.Runner.Third {
-		s.AddRun(1)
-		s.Runner = RunnerState{First: true, Second: true, Third: false}
-	} else if s.Runner.Second && s.Runner.Third {
-		s.AddRun(1)
-		s.Runner = RunnerState{First: true, Second: false, Third: true}
-	} else if s.Runner.First {
-		s.Runner = RunnerState{First: true, Second: true, Third: false}
-	} else if s.Runner.Second {
-		s.Runner = RunnerState{First: true, Second: false, Third: true}
-	} else if s.Runner.Third {
-		s.AddRun(1)
-		s.Runner = RunnerState{First: true, Second: false, Third: false}
-	} else {
-		s.Runner.First = true
-	}
-}
-
-func addSacrificeBunt(s *GameState) bool {
-	// returns true if inning changed and we should return early
-	if s.Runner.First && s.Runner.Second && s.Runner.Third {
-		if addOut(s) {
-			return true
-		}
-		s.AddRun(1)
-		s.Runner = RunnerState{First: false, Second: true, Third: true}
-		return false
-	} else if s.Runner.First && s.Runner.Second {
-		if addOut(s) {
-			return true
-		}
-		s.Runner = RunnerState{First: false, Second: true, Third: true}
-		return false
-	} else if s.Runner.First && s.Runner.Third {
-		if addOut(s) {
-			return true
-		}
-		s.AddRun(1)
-		s.Runner = RunnerState{First: false, Second: true, Third: false}
-		return false
-	} else if s.Runner.Second && s.Runner.Third {
-		if addOut(s) {
-			return true
-		}
-		s.AddRun(1)
-		s.Runner = RunnerState{First: false, Second: false, Third: true}
-		return false
-	} else if s.Runner.First {
-		if addOut(s) {
-			return true
-		}
-		s.Runner = RunnerState{First: false, Second: true, Third: false}
-		return false
-	} else if s.Runner.Second {
-		if addOut(s) {
-			return true
-		}
-		s.Runner = RunnerState{First: false, Second: false, Third: true}
-		return false
-	} else if s.Runner.Third {
-		if addOut(s) {
-			return true
-		}
-		s.AddRun(1)
-		s.Runner = RunnerState{First: false, Second: false, Third: false}
-		return false
-	} else {
-		if addOut(s) {
-			return true
-		}
-		return false
-	}
-}
-
-func handleSteal(s *GameState) {
-	if s.Runner.First && s.Runner.Second && s.Runner.Third {
-		s.AddRun(1)
-		s.Runner = RunnerState{First: false, Second: true, Third: true}
-	} else if s.Runner.First && s.Runner.Second {
-		s.Runner = RunnerState{First: false, Second: true, Third: true}
-	} else if s.Runner.First && s.Runner.Third {
-		s.AddRun(1)
-		s.Runner = RunnerState{First: false, Second: true, Third: false}
-	} else if s.Runner.Second && s.Runner.Third {
-		s.AddRun(1)
-		s.Runner = RunnerState{First: false, Second: false, Third: true}
-	} else if s.Runner.First {
-		s.Runner = RunnerState{First: false, Second: true, Third: false}
-	} else if s.Runner.Second {
-		s.Runner = RunnerState{First: false, Second: false, Third: true}
-	} else if s.Runner.Third {
-		s.AddRun(1)
-		s.Runner = RunnerState{First: false, Second: false, Third: false}
-	}
+func destinationPtr(destination BaseDestination) *BaseDestination {
+	return &destination
 }
 
 func (s *GameState) ChangeInning() {
