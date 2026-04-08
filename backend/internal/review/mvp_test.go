@@ -11,7 +11,7 @@ func TestScoreMVPPlayer(t *testing.T) {
 	t.Parallel()
 
 	match := Match{
-		Result: ResultWin,
+		IsWin: 1,
 	}
 
 	tests := []struct {
@@ -66,20 +66,20 @@ func TestSelectMVP(t *testing.T) {
 	t.Parallel()
 
 	match := Match{
-		ID:       "match-1",
-		Date:     time.Date(2026, time.April, 4, 0, 0, 0, 0, time.UTC),
-		Opponent: "Rivals",
-		Result:   ResultWin,
+		ID:           1,
+		MatchDate:    time.Date(2026, time.April, 4, 0, 0, 0, 0, time.UTC),
+		OpponentName: "Rivals",
+		IsWin:        1,
 		PlayerStats: []PlayerMatchStats{
-			{PlayerID: "p1", PlayerName: "A", Hits: 1},
-			{PlayerID: "p2", PlayerName: "B", Hits: 3},
-			{PlayerID: "p3", PlayerName: "C", Hits: 2, RBI: 1},
+			{PlayerID: 1, PlayerName: "A", Hits: 1},
+			{PlayerID: 2, PlayerName: "B", Hits: 3},
+			{PlayerID: 3, PlayerName: "C", Hits: 2, RBI: 1},
 		},
 	}
 
 	got := SelectMVP(match)
 
-	assert.Equal(t, "p3", got.PlayerID, "SelectMVP() PlayerID = %q, want %q", got.PlayerID, "p3")
+	assert.Equal(t, 3, got.PlayerID, "SelectMVP() PlayerID = %d, want %d", got.PlayerID, 3)
 	assert.Equal(t, "C", got.PlayerName, "SelectMVP() PlayerName = %q, want %q", got.PlayerName, "C")
 	assert.Equal(t, 7, got.Score, "SelectMVP() Score = %d, want %d", got.Score, 7)
 }
@@ -88,16 +88,16 @@ func TestSelectMVPWithTie(t *testing.T) {
 	t.Parallel()
 	
 	match := Match{
-		ID:       "match-1",
-		Date:     time.Date(2026, time.April, 4, 0, 0, 0, 0, time.UTC),
-		Opponent: "Rivals",
-		Result:   ResultWin,
+		ID:           1,
+		MatchDate:    time.Date(2026, time.April, 4, 0, 0, 0, 0, time.UTC),
+		OpponentName: "Rivals",
+		IsWin:        1,
 		PlayerStats: []PlayerMatchStats{
-			{PlayerID: "p1", PlayerName: "A", Hits: 1},
-			{PlayerID: "p2", PlayerName: "B", Hits: 1},
+			{PlayerID: 1, PlayerName: "A", Hits: 1},
+			{PlayerID: 2, PlayerName: "B", Hits: 1},
 		},
 	}
 
 	got := SelectMVP(match)
-	assert.Equal(t, "p1", got.PlayerID, "SelectMVP() PlayerID = %q, want %q", got.PlayerID, "p1")
+	assert.Equal(t, 1, got.PlayerID, "SelectMVP() PlayerID = %d, want %d", got.PlayerID, 1)
 }

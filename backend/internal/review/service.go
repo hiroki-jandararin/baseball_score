@@ -1,13 +1,15 @@
 package review
 
+import "time"
+
 // MatchOverview は結果画面に表示するための試合ヘッダー
 type MatchOverview struct {
-	ID            string
-	Date          string
-	Opponent      string
-	ScoreTeam     int
-	ScoreOpponent int
-	Result        Result
+	ID            int
+	MatchDate     time.Time
+	OpponentName  string
+	TeamScore     int
+	OpponentScore int
+	IsWin         int
 }
 
 // MatchReview は1試合分の最終生成結果

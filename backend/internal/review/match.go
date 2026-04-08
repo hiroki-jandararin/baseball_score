@@ -2,38 +2,38 @@ package review
 
 import "time"
 
-type Result string
-
-const (
-	ResultWin  Result = "win"
-	ResultLose Result = "lose"
-	ResultDraw Result = "draw"
-)
-
 type Match struct {
-	ID            string
-	Date          time.Time
-	Opponent      string
-	ScoreTeam     int
-	ScoreOpponent int
-	Result        Result
+	ID            int
+	TeamID        int
+	OpponentName  string
+	MatchDate     time.Time
+	Location      string
+	IsWin         int
+	TeamScore     int
+	OpponentScore int
+	Note          string
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
 	PlayerStats   []PlayerMatchStats
 }
 
 type PlayerMatchStats struct {
-	PlayerID   string
-	PlayerName string
-	Hits       int
-	Runs       int
-	RBI        int
-	Strikeouts int
-	Walks      int
-	Errors     int
-	Tags       PlayerTags
-}
-
-type PlayerTags struct {
-	GoodPlay        bool
-	BadPlay         bool
-	HighlightMoment bool
+	ID            int
+	MatchID       int
+	PlayerID      int
+	PlayerName    string
+	BattingOrder  int
+	Position      string
+	Hits          int
+	AtBats        int
+	RBI           int
+	Runs          int
+	Walks         int
+	Strikeouts    int
+	Errors        int
+	GoodPlay      int
+	HighlightMoment int
+	Memo          string
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
 }

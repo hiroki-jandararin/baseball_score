@@ -1,7 +1,7 @@
 package review
 
 type MVPResult struct {
-	PlayerID   string
+	PlayerID   int
 	PlayerName string
 	Score      int
 }
