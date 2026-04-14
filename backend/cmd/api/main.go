@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 
+	"baseball-score-app/backend/internal/platform/config"
 	"baseball-score-app/backend/internal/platform/db"
 )
 
@@ -30,6 +31,14 @@ func main() {
 			log.Printf("failed to close database: %v", err)
 		}
 	}(database)
+
+	openAIConfig, err := config.LoadOpenAI()
+	if err != nil {
+		log.Fatalf("openai config invalid: %v", err)
+	}
+	if openAIConfig.APIKey != "" {
+		log.Printf("openai integration enabled with model %s", openAIConfig.Model)
+	}
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", healthHandler)
