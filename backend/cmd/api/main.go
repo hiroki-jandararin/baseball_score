@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 
-	"baseball-score-app/backend/internal/db"
+	"baseball-score-app/backend/internal/platform/db"
 )
 
 type healthResponse struct {
