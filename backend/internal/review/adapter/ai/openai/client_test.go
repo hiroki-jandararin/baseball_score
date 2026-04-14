@@ -10,6 +10,7 @@ import (
 	"time"
 
 	platformconfig "baseball-score-app/backend/internal/platform/config"
+	"baseball-score-app/backend/internal/review/domain"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -104,6 +105,56 @@ func TestGenerateMatchReviewReturnsAPIError(t *testing.T) {
 	})
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "bad api key")
+}
+
+func TestGeneratePlayerCommentSendsExpectedRequest(t *testing.T) {
+	t.Parallel()
+
+	var requestBody map[string]any
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		require.Equal(t, http.MethodPost, r.Method)
+		require.Equal(t, "/responses", r.URL.Path)
+		require.NoError(t, json.NewDecoder(r.Body).Decode(&requestBody))
+
+		writeResponsesSuccess(t, w, "今日はバットが火を吹いた。完全に主役。")
+	}))
+	defer server.Close()
+
+	client := newTestClient(t, server.URL, "test-key", "")
+
+	_, err := client.GeneratePlayerComment(context.Background(), review.PlayerMatchStats{
+		PlayerID:   1,
+		PlayerName: "山田",
+		Hits:       3,
+		RBI:        2,
+		Runs:       1,
+	})
+	require.NoError(t, err)
+
+	assert.Equal(t, "gpt-4.1-mini", requestBody["model"])
+	assert.Equal(t, "Player result JSON:\n{\"player_id\":1,\"player_name\":\"山田\",\"hits\":3,\"rbi\":2,\"runs\":1}", requestBody["input"])
+}
+
+func TestGeneratePlayerCommentReturnsOutputText(t *testing.T) {
+	t.Parallel()
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		writeResponsesSuccess(t, w, "今日はバットが火を吹いた。完全に主役。")
+	}))
+	defer server.Close()
+
+	client := newTestClient(t, server.URL, "test-key", "")
+
+	got, err := client.GeneratePlayerComment(context.Background(), review.PlayerMatchStats{
+		PlayerID:   1,
+		PlayerName: "山田",
+		Hits:       3,
+		RBI:        2,
+		Runs:       1,
+	})
+	require.NoError(t, err)
+	assert.Equal(t, "今日はバットが火を吹いた。完全に主役。", got)
 }
 
 func newTestClient(t *testing.T, baseURL, apiKey, project string) *Client {
