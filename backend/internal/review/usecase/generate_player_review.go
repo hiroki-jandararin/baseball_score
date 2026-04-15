@@ -1,10 +1,10 @@
-package review
+package usecase
 
-import "context"
-
-type PlayerCommentGenerator interface {
-	GeneratePlayerComment(ctx context.Context, stats PlayerMatchStats) (string, error)
-}
+import (
+	review "baseball-score-app/backend/internal/review/domain"
+	"baseball-score-app/backend/internal/review/port"
+	"context"
+)
 
 type PlayerAIReview struct {
 	PlayerID   int
@@ -13,10 +13,10 @@ type PlayerAIReview struct {
 }
 
 type PlayerReviewService struct {
-	generator PlayerCommentGenerator
+	generator port.PlayerCommentGenerator
 }
 
-func (s PlayerReviewService) Generate(ctx context.Context, stats PlayerMatchStats) (PlayerAIReview, error) {
+func (s PlayerReviewService) Generate(ctx context.Context, stats review.PlayerMatchStats) (PlayerAIReview, error) {
 	comment, err := s.generator.GeneratePlayerComment(ctx, stats)
 	if err != nil {
 		return PlayerAIReview{}, err

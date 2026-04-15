@@ -1,21 +1,24 @@
-package review
+package usecase
 
 import (
 	"context"
 	"testing"
 
+	review "baseball-score-app/backend/internal/review/domain"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
 
 type fakePlayerCommentGenerator struct {
 	comment  string
 	err      error
 	called   bool
-	gotStats PlayerMatchStats
+	gotStats review.PlayerMatchStats
 }
 
-func (f *fakePlayerCommentGenerator) GeneratePlayerComment(ctx context.Context, stats PlayerMatchStats) (string, error) {
+func (f *fakePlayerCommentGenerator) GeneratePlayerComment(ctx context.Context, stats review.PlayerMatchStats) (string, error) {
 	f.called = true
 	f.gotStats = stats
 	if f.err != nil {
@@ -35,7 +38,7 @@ func TestPlayerReviewServiceGenerateReturnsGeneratedComment(t *testing.T) {
 		generator: fake,
 	}
 
-	stats := PlayerMatchStats{
+	stats := review.PlayerMatchStats{
 		PlayerID:   1,
 		PlayerName: "山田",
 		Hits:       3,
