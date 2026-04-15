@@ -16,15 +16,20 @@ type PlayerReviewService struct {
 	generator port.PlayerCommentGenerator
 }
 
-func (s PlayerReviewService) Generate(ctx context.Context, stats review.PlayerMatchStats) (PlayerAIReview, error) {
+func (s PlayerReviewService) Generate(ctx context.Context, stats review.PlayerMatchStats, isMVP bool) (review.PlayerReview, error) {
 	comment, err := s.generator.GeneratePlayerComment(ctx, stats)
 	if err != nil {
-		return PlayerAIReview{}, err
+		return review.PlayerReview{}, err
 	}
 
-	return PlayerAIReview{
+	title := review.AssignTitle(stats)
+
+	return review.PlayerReview{
 		PlayerID:   stats.PlayerID,
 		PlayerName: stats.PlayerName,
+		Stats:      stats,
+		Title:      title,
 		Comment:    comment,
+		IsMVP:      isMVP,
 	}, nil
 }
