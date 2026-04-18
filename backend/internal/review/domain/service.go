@@ -26,8 +26,3 @@ type MatchReview struct {
 // 3. 試合全体の総評を作る
 // 4. 各選手の称号とコメントを作る
 // 5. 最終的な MatchReview にまとめる
-type Service struct{}
-
-func (s Service) GenerateMatchReview(match Match) MatchReview {
-	return MatchReview{}
-}
