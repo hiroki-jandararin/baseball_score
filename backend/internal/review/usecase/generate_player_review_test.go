@@ -46,7 +46,7 @@ func TestPlayerReviewServiceGenerateBuildsPlayerReview(t *testing.T) {
 		Runs:       1,
 	}
 
-	got, err := service.Generate(context.Background(), stats, false)
+	got, err := service.GeneratePlayerReview(context.Background(), stats, false)
 	require.NoError(t, err)
 
 	assert.True(t, fake.called)
@@ -79,7 +79,7 @@ func TestPlayerReviewServiceGenerateMarksMVP(t *testing.T) {
 		RBI:        2,
 	}
 
-	got, err := service.Generate(context.Background(), stats, true)
+	got, err := service.GeneratePlayerReview(context.Background(), stats, true)
 	require.NoError(t, err)
 
 	assert.Equal(t, review.PlayerReview{
@@ -108,7 +108,7 @@ func TestPlayerReviewServiceGenerateMarksMVP(t *testing.T) {
   		PlayerName: "山田",
   	}
 
-  	got, err := service.Generate(context.Background(), stats, false)
+  	got, err := service.GeneratePlayerReview(context.Background(), stats, false)
   	require.Error(t, err)
   	assert.ErrorIs(t, err, assert.AnError)
   	assert.Equal(t, review.PlayerReview{}, got)

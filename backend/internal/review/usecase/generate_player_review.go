@@ -16,7 +16,7 @@ type PlayerReviewService struct {
 	generator port.PlayerCommentGenerator
 }
 
-func (s PlayerReviewService) Generate(ctx context.Context, stats review.PlayerMatchStats, isMVP bool) (review.PlayerReview, error) {
+func (s PlayerReviewService) GeneratePlayerReview(ctx context.Context, stats review.PlayerMatchStats, isMVP bool) (review.PlayerReview, error) {
 	comment, err := s.generator.GeneratePlayerComment(ctx, stats)
 	if err != nil {
 		return review.PlayerReview{}, err
