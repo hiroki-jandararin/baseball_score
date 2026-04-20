@@ -27,6 +27,10 @@ func (f *fakeMatchRepository) SaveMatch(ctx context.Context, match review.Match)
 	return f.returned, nil
 }
 
+func (f *fakeMatchRepository) FindMatchByID(ctx context.Context, matchID int) (review.Match, error) {
+	return review.Match{}, nil
+}
+
 func TestSaveMatchResultServiceSaveMatchResult(t *testing.T) {
 	t.Parallel()
 
@@ -55,7 +59,6 @@ func TestSaveMatchResultServiceSaveMatchResult(t *testing.T) {
 		},
 	}
 
-	
 	expectedID := 99
 
 	repo := &fakeMatchRepository{returned: expectedID}

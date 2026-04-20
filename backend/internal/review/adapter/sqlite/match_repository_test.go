@@ -10,9 +10,9 @@ import (
 
 	review "baseball-score-app/backend/internal/review/domain"
 
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	_ "github.com/mattn/go-sqlite3"
 )
 
 func TestMatchRepositorySaveMatch(t *testing.T) {
@@ -32,36 +32,36 @@ func TestMatchRepositorySaveMatch(t *testing.T) {
 		Note:          "great finish",
 		PlayerStats: []review.PlayerMatchStats{
 			{
-				PlayerID:      1,
-				PlayerName:    "山田",
-				BattingOrder:  1,
-				Position:      "CF",
-				Hits:          2,
-				AtBats:        4,
-				RBI:           1,
-				Runs:          1,
-				Walks:         1,
-				Strikeouts:    0,
-				Errors:        0,
-				GoodPlay:      1,
+				PlayerID:        1,
+				PlayerName:      "山田",
+				BattingOrder:    1,
+				Position:        "CF",
+				Hits:            2,
+				AtBats:          4,
+				RBI:             1,
+				Runs:            1,
+				Walks:           1,
+				Strikeouts:      0,
+				Errors:          0,
+				GoodPlay:        1,
 				HighlightMoment: 1,
-				Memo:          "lead-off spark",
+				Memo:            "lead-off spark",
 			},
 			{
-				PlayerID:      2,
-				PlayerName:    "佐藤",
-				BattingOrder:  4,
-				Position:      "1B",
-				Hits:          1,
-				AtBats:        3,
-				RBI:           2,
-				Runs:          1,
-				Walks:         0,
-				Strikeouts:    1,
-				Errors:        0,
-				GoodPlay:      0,
+				PlayerID:        2,
+				PlayerName:      "佐藤",
+				BattingOrder:    4,
+				Position:        "1B",
+				Hits:            1,
+				AtBats:          3,
+				RBI:             2,
+				Runs:            1,
+				Walks:           0,
+				Strikeouts:      1,
+				Errors:          0,
+				GoodPlay:        0,
 				HighlightMoment: 1,
-				Memo:          "go-ahead hit",
+				Memo:            "go-ahead hit",
 			},
 		},
 	}
@@ -72,6 +72,92 @@ func TestMatchRepositorySaveMatch(t *testing.T) {
 	require.NotZero(t, got)
 	assertMatchRow(t, db, got, input)
 	assertPlayerStatsRows(t, db, got, input)
+}
+
+func TestMatchRepositoryFindMatchByID(t *testing.T) {
+	t.Parallel()
+
+	db := newTestDB(t)
+	repo := NewMatchRepository(db)
+
+	input := review.Match{
+		TeamID:        1,
+		OpponentName:  "Rivals",
+		MatchDate:     time.Date(2026, 4, 18, 10, 0, 0, 0, time.UTC),
+		Location:      "Tokyo",
+		IsWin:         1,
+		TeamScore:     5,
+		OpponentScore: 3,
+		Note:          "great finish",
+		PlayerStats: []review.PlayerMatchStats{
+			{
+				PlayerID:        1,
+				PlayerName:      "山田",
+				BattingOrder:    1,
+				Position:        "CF",
+				Hits:            2,
+				AtBats:          4,
+				RBI:             1,
+				Runs:            1,
+				Walks:           1,
+				Strikeouts:      0,
+				Errors:          0,
+				GoodPlay:        1,
+				HighlightMoment: 1,
+				Memo:            "lead-off spark",
+			},
+			{
+				PlayerID:        2,
+				PlayerName:      "佐藤",
+				BattingOrder:    4,
+				Position:        "1B",
+				Hits:            1,
+				AtBats:          3,
+				RBI:             2,
+				Runs:            1,
+				Walks:           0,
+				Strikeouts:      1,
+				Errors:          0,
+				GoodPlay:        0,
+				HighlightMoment: 1,
+				Memo:            "go-ahead hit",
+			},
+		},
+	}
+
+	matchID, err := repo.SaveMatch(context.Background(), input)
+	require.NoError(t, err)
+
+	got, err := repo.FindMatchByID(context.Background(), matchID)
+	require.NoError(t, err)
+
+	assert.Equal(t, matchID, got.ID)
+	assert.Equal(t, input.TeamID, got.TeamID)
+	assert.Equal(t, input.OpponentName, got.OpponentName)
+	assert.Equal(t, input.MatchDate, got.MatchDate)
+	assert.Equal(t, input.Location, got.Location)
+	assert.Equal(t, input.IsWin, got.IsWin)
+	assert.Equal(t, input.TeamScore, got.TeamScore)
+	assert.Equal(t, input.OpponentScore, got.OpponentScore)
+	assert.Equal(t, input.Note, got.Note)
+	assert.False(t, got.CreatedAt.IsZero())
+	assert.False(t, got.UpdatedAt.IsZero())
+
+	require.Len(t, got.PlayerStats, 2)
+	assertPlayerStatsEqual(t, matchID, input.PlayerStats[0], got.PlayerStats[0])
+	assertPlayerStatsEqual(t, matchID, input.PlayerStats[1], got.PlayerStats[1])
+}
+
+func TestMatchRepositoryFindMatchByIDReturnsErrorWhenMatchNotFound(t *testing.T) {
+	t.Parallel()
+
+	db := newTestDB(t)
+	repo := NewMatchRepository(db)
+
+	got, err := repo.FindMatchByID(context.Background(), 999)
+
+	require.Error(t, err)
+	assert.Equal(t, review.Match{}, got)
 }
 
 func newTestDB(t *testing.T) *sql.DB {
@@ -93,6 +179,29 @@ func newTestDB(t *testing.T) *sql.DB {
 	seedTestData(t, db)
 
 	return db
+}
+
+func assertPlayerStatsEqual(t *testing.T, matchID int, expected review.PlayerMatchStats, actual review.PlayerMatchStats) {
+	t.Helper()
+
+	assert.NotZero(t, actual.ID)
+	assert.Equal(t, matchID, actual.MatchID)
+	assert.Equal(t, expected.PlayerID, actual.PlayerID)
+	assert.Equal(t, expected.PlayerName, actual.PlayerName)
+	assert.Equal(t, expected.BattingOrder, actual.BattingOrder)
+	assert.Equal(t, expected.Position, actual.Position)
+	assert.Equal(t, expected.Hits, actual.Hits)
+	assert.Equal(t, expected.AtBats, actual.AtBats)
+	assert.Equal(t, expected.RBI, actual.RBI)
+	assert.Equal(t, expected.Runs, actual.Runs)
+	assert.Equal(t, expected.Walks, actual.Walks)
+	assert.Equal(t, expected.Strikeouts, actual.Strikeouts)
+	assert.Equal(t, expected.Errors, actual.Errors)
+	assert.Equal(t, expected.GoodPlay, actual.GoodPlay)
+	assert.Equal(t, expected.HighlightMoment, actual.HighlightMoment)
+	assert.Equal(t, expected.Memo, actual.Memo)
+	assert.False(t, actual.CreatedAt.IsZero())
+	assert.False(t, actual.UpdatedAt.IsZero())
 }
 
 func seedTestData(t *testing.T, db *sql.DB) {
