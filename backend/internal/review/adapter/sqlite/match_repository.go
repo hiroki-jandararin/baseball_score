@@ -18,6 +18,21 @@ func NewMatchRepository(db *sql.DB) *MatchRepository {
 }
 
 func (r *MatchRepository) FindMatchByID(ctx context.Context, matchID int) (review.Match, error) {
+	match, err := r.findMatchByID(ctx, matchID)
+	if err != nil {
+		return review.Match{}, err
+	}
+
+	playerStats, err := r.findPlayerStatsByMatchID(ctx, matchID)
+	if err != nil {
+		return review.Match{}, err
+	}
+
+	match.PlayerStats = playerStats
+	return match, nil
+}
+
+func (r *MatchRepository) findMatchByID(ctx context.Context, matchID int) (review.Match, error) {
 	var match review.Match
 	var matchDate string
 	var createdAt string
@@ -57,6 +72,10 @@ func (r *MatchRepository) FindMatchByID(ctx context.Context, matchID int) (revie
 		return review.Match{}, fmt.Errorf("parse match updated at: %w", err)
 	}
 
+	return match, nil
+}
+
+func (r *MatchRepository) findPlayerStatsByMatchID(ctx context.Context, matchID int) ([]review.PlayerMatchStats, error) {
 	rows, err := r.db.QueryContext(ctx, `
 		SELECT
 			pms.id,
@@ -83,10 +102,11 @@ func (r *MatchRepository) FindMatchByID(ctx context.Context, matchID int) (revie
 		ORDER BY pms.batting_order, pms.id
 	`, matchID)
 	if err != nil {
-		return review.Match{}, fmt.Errorf("find player stats: %w", err)
+		return nil, fmt.Errorf("find player stats: %w", err)
 	}
 	defer rows.Close()
 
+	var playerStats []review.PlayerMatchStats
 	for rows.Next() {
 		var stats review.PlayerMatchStats
 		var statsCreatedAt string
@@ -113,25 +133,25 @@ func (r *MatchRepository) FindMatchByID(ctx context.Context, matchID int) (revie
 			&statsUpdatedAt,
 		)
 		if err != nil {
-			return review.Match{}, fmt.Errorf("scan player stats: %w", err)
+			return nil, fmt.Errorf("scan player stats: %w", err)
 		}
 
 		stats.CreatedAt, err = time.Parse(time.RFC3339, statsCreatedAt)
 		if err != nil {
-			return review.Match{}, fmt.Errorf("parse player stats created at: %w", err)
+			return nil, fmt.Errorf("parse player stats created at: %w", err)
 		}
 		stats.UpdatedAt, err = time.Parse(time.RFC3339, statsUpdatedAt)
 		if err != nil {
-			return review.Match{}, fmt.Errorf("parse player stats updated at: %w", err)
+			return nil, fmt.Errorf("parse player stats updated at: %w", err)
 		}
 
-		match.PlayerStats = append(match.PlayerStats, stats)
+		playerStats = append(playerStats, stats)
 	}
 	if err := rows.Err(); err != nil {
-		return review.Match{}, fmt.Errorf("iterate player stats: %w", err)
+		return nil, fmt.Errorf("iterate player stats: %w", err)
 	}
 
-	return match, nil
+	return playerStats, nil
 }
 
 func (r *MatchRepository) SaveMatch(ctx context.Context, match review.Match) (int, error) {
@@ -148,7 +168,6 @@ func (r *MatchRepository) SaveMatch(ctx context.Context, match review.Match) (in
 	}()
 
 	now := time.Now().UTC().Format(time.RFC3339)
-
 	result, err := tx.ExecContext(ctx, `
 		INSERT INTO matches (
 			team_id, opponent_name, match_date, location, is_win, team_score, opponent_score, note, created_at, updated_at

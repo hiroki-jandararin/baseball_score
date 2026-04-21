@@ -160,6 +160,54 @@ func TestMatchRepositoryFindMatchByIDReturnsErrorWhenMatchNotFound(t *testing.T)
 	assert.Equal(t, review.Match{}, got)
 }
 
+func TestMatchRepositoryFindMatchByIDOrdersPlayerStatsByBattingOrder(t *testing.T) {
+	t.Parallel()
+
+	db := newTestDB(t)
+	repo := NewMatchRepository(db)
+
+	input := review.Match{
+		TeamID:        1,
+		OpponentName:  "Rivals",
+		MatchDate:     time.Date(2026, 4, 18, 10, 0, 0, 0, time.UTC),
+		Location:      "Tokyo",
+		IsWin:         1,
+		TeamScore:     5,
+		OpponentScore: 3,
+		Note:          "batting order check",
+		PlayerStats: []review.PlayerMatchStats{
+			{
+				PlayerID:     2,
+				PlayerName:   "佐藤",
+				BattingOrder: 4,
+				Position:     "1B",
+				Hits:         1,
+				AtBats:       3,
+			},
+			{
+				PlayerID:     1,
+				PlayerName:   "山田",
+				BattingOrder: 1,
+				Position:     "CF",
+				Hits:         2,
+				AtBats:       4,
+			},
+		},
+	}
+
+	matchID, err := repo.SaveMatch(context.Background(), input)
+	require.NoError(t, err)
+
+	got, err := repo.FindMatchByID(context.Background(), matchID)
+	require.NoError(t, err)
+
+	require.Len(t, got.PlayerStats, 2)
+	assert.Equal(t, 1, got.PlayerStats[0].BattingOrder)
+	assert.Equal(t, "山田", got.PlayerStats[0].PlayerName)
+	assert.Equal(t, 4, got.PlayerStats[1].BattingOrder)
+	assert.Equal(t, "佐藤", got.PlayerStats[1].PlayerName)
+}
+
 func newTestDB(t *testing.T) *sql.DB {
 	t.Helper()
 
