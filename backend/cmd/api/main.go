@@ -9,6 +9,8 @@ import (
 
 	"baseball-score-app/backend/internal/platform/config"
 	"baseball-score-app/backend/internal/platform/db"
+	sqlitereview "baseball-score-app/backend/internal/review/adapter/sqlite"
+	"baseball-score-app/backend/internal/review/usecase"
 )
 
 type healthResponse struct {
@@ -42,6 +44,10 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", healthHandler)
+
+	matchRepository := sqlitereview.NewMatchRepository(database)
+	newsService := usecase.NewNewsService(matchRepository)
+	mux.Handle("/matches/", newNewsHandler(newsService))
 
 	handler := corsMiddleware(mux)
 
