@@ -1,42 +1,3 @@
-:root {
-  --bg-page: #f1eadc;
-  --bg-panel: rgba(255, 249, 238, 0.9);
-  --bg-panel-strong: #16372d;
-  --control-bg: rgba(255, 255, 255, 0.72);
-  --scoreboard-bg: linear-gradient(180deg, rgba(25, 66, 54, 0.98), rgba(15, 38, 31, 0.98));
-  --line: rgba(50, 45, 32, 0.13);
-  --text-main: #1f241c;
-  --text-muted: #645f53;
-  --text-inverse: #f5f7f0;
-  --accent: #b5522f;
-  --accent-strong: #934126;
-  --accent-soft: rgba(181, 82, 47, 0.12);
-  --focus: rgba(181, 82, 47, 0.45);
-  --shadow-soft:
-    0 10px 30px rgba(44, 41, 34, 0.08),
-    0 2px 8px rgba(44, 41, 34, 0.04);
-
-  --body: 'Avenir Next', 'Hiragino Sans', 'Yu Gothic', sans-serif;
-  --display: 'Avenir Next Condensed', 'Arial Narrow', 'Hiragino Kaku Gothic ProN', sans-serif;
-  --mono: 'SFMono-Regular', 'Menlo', 'Consolas', monospace;
-
-  font-family: var(--body);
-  line-height: 1.5;
-  font-weight: 400;
-  color: var(--text-main);
-  background:
-    radial-gradient(circle at top, rgba(255, 255, 255, 0.45), transparent 30%),
-    linear-gradient(180deg, #f3ebdc 0%, #e7ddca 100%);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-* {
-  box-sizing: border-box;
-}
-
 html {
   min-height: 100%;
 }
@@ -44,59 +5,23 @@ html {
 body {
   min-height: 100vh;
   margin: 0;
-  background:
-    radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.42), transparent 24%),
-    linear-gradient(180deg, #f3ebdc 0%, #e7ddca 100%);
+  font-family: "Avenir Next", "Hiragino Sans", "Yu Gothic", sans-serif;
+  background: #f7f7f8;
+  color: #171717;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background-image:
-    linear-gradient(rgba(16, 73, 59, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(16, 73, 59, 0.03) 1px, transparent 1px);
-  background-size: 32px 32px;
-  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.45), transparent 90%);
+button {
+  cursor: pointer;
 }
 
-#root {
-  min-height: 100vh;
+.scrollbar-hide {
+  scrollbar-width: none;
 }
 
-h1,
-h2 {
-  font-family: var(--display);
-  line-height: 1.02;
-  letter-spacing: 0.01em;
-  margin: 0;
-}
-
-h1 {
-  font-size: clamp(2.8rem, 5vw, 4.8rem);
-}
-
-h2 {
-  font-size: 1.7rem;
-}
-
-p {
-  margin: 0;
-}
-
-button,
-input,
-select,
-textarea {
-  font: inherit;
-}
-
-code,
-pre {
-  font-family: var(--mono);
-}
-
-a {
-  color: inherit;
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
