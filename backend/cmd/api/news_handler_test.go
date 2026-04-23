@@ -62,3 +62,49 @@ func TestNewsHandlerReturnsArticle(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, expected, got)
 }
+
+func TestNewsHandlerReturnsBadRequestWhenMatchIDInvalid(t *testing.T) {
+	t.Parallel()
+
+	service := &fakeNewsService{}
+	handler := newNewsHandler(service)
+
+	request := httptest.NewRequest(http.MethodGet, "/matches/abc/news", nil)
+	recorder := httptest.NewRecorder()
+
+	handler.ServeHTTP(recorder, request)
+
+	assert.Equal(t, http.StatusBadRequest, recorder.Code)
+	assert.False(t, service.called)
+}
+
+func TestNewsHandlerReturnsInternalServerErrorWhenServiceFails(t *testing.T) {
+	t.Parallel()
+
+	service := &fakeNewsService{err: assert.AnError}
+	handler := newNewsHandler(service)
+
+	request := httptest.NewRequest(http.MethodGet, "/matches/10/news", nil)
+	recorder := httptest.NewRecorder()
+
+	handler.ServeHTTP(recorder, request)
+
+	assert.Equal(t, http.StatusInternalServerError, recorder.Code)
+	assert.True(t, service.called)
+	assert.Equal(t, 10, service.gotMatchID)
+}
+
+func TestNewsHandlerReturnsMethodNotAllowedWhenMethodIsNotGet(t *testing.T) {
+	t.Parallel()
+
+	service := &fakeNewsService{}
+	handler := newNewsHandler(service)
+
+	request := httptest.NewRequest(http.MethodPost, "/matches/10/news", nil)
+	recorder := httptest.NewRecorder()
+
+	handler.ServeHTTP(recorder, request)
+
+	assert.Equal(t, http.StatusMethodNotAllowed, recorder.Code)
+	assert.False(t, service.called)
+}

@@ -16,6 +16,11 @@ type NewsArticleGenerator interface {
 
 func newNewsHandler(service NewsArticleGenerator) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
 		matchID, err := parseNewsMatchID(r.URL.Path)
 		if err != nil {
 			http.Error(w, "invalid match id", http.StatusBadRequest)
