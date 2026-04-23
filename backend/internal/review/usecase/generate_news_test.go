@@ -38,7 +38,7 @@ func TestNewNewsServiceUsesRepository(t *testing.T) {
 
 	match := review.Match{
 		ID:            matchID,
-		OpponentName:  "Rivals",
+		OpponentName:  "東町ライバルズ",
 		MatchDate:     time.Date(2026, 4, 18, 10, 0, 0, 0, time.UTC),
 		IsWin:         1,
 		TeamScore:     5,
@@ -55,7 +55,7 @@ func TestNewNewsServiceUsesRepository(t *testing.T) {
 
 	assert.True(t, repo.called)
 	assert.Equal(t, matchID, repo.gotMatchID)
-	assert.Equal(t, "SharksがRivalsに5-3で勝利", got.Title)
+	assert.Equal(t, "青空シャークスが東町ライバルズに5-3で勝利", got.Title)
 }
 
 func TestNewsServiceGenerateArticleBuildsArticle(t *testing.T) {
@@ -65,7 +65,7 @@ func TestNewsServiceGenerateArticleBuildsArticle(t *testing.T) {
 
 	match := review.Match{
 		ID:            matchID,
-		OpponentName:  "Rivals",
+		OpponentName:  "東町ライバルズ",
 		MatchDate:     time.Date(2026, 4, 18, 10, 0, 0, 0, time.UTC),
 		IsWin:         1,
 		TeamScore:     5,
@@ -99,13 +99,13 @@ func TestNewsServiceGenerateArticleBuildsArticle(t *testing.T) {
 	assert.True(t, repo.called)
 	assert.Equal(t, matchID, repo.gotMatchID)
 	assert.Equal(t, NewsArticle{
-		Title:   "SharksがRivalsに5-3で勝利",
+		Title:   "青空シャークスが東町ライバルズに5-3で勝利",
 		Source:  "Team Sports",
 		Time:    "2026.04.18 10:00",
-		Summary: "SharksはRivalsとの試合を5-3で制し、佐藤の活躍が光った。",
+		Summary: "青空シャークスは東町ライバルズとの試合を5-3で制し、佐藤の活躍が光った。",
 		Lead:    "1番山田が攻撃の起点を作り、MVPの佐藤が勝負どころで流れを引き寄せた。",
 		Paragraphs: []string{
-			"SharksはRivalsを相手に5-3で勝利した。",
+			"青空シャークスは東町ライバルズを相手に5-3で勝利した。",
 			"佐藤は2安打2打点の内容で、チームの勝利に大きく貢献した。",
 			"山田も出塁と得点で攻撃を支え、打線全体に流れを作った。",
 		},
