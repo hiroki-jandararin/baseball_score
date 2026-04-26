@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -107,4 +108,20 @@ func TestNewsHandlerReturnsMethodNotAllowedWhenMethodIsNotGet(t *testing.T) {
 
 	assert.Equal(t, http.StatusMethodNotAllowed, recorder.Code)
 	assert.False(t, service.called)
+}
+
+func TestNewsHandlerReturnsNotFoundWhenMatchNotFound(t *testing.T) {
+	t.Parallel()
+
+	service := &fakeNewsService{err: errors.New("match not found")}
+	handler := newNewsHandler(service)
+
+	request := httptest.NewRequest(http.MethodGet, "/matches/999/news", nil)
+	recorder := httptest.NewRecorder()
+
+	handler.ServeHTTP(recorder, request)
+
+	assert.Equal(t, http.StatusNotFound, recorder.Code)
+	assert.True(t, service.called)
+	assert.Equal(t, 999, service.gotMatchID)
 }

@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strconv"
 	"strings"
@@ -29,6 +31,10 @@ func newNewsHandler(service NewsArticleGenerator) http.Handler {
 
 		article, err := service.GenerateArticle(r.Context(), matchID)
 		if err != nil {
+			if isNotFoundError(err) {
+				http.Error(w, "match not found", http.StatusNotFound)
+				return
+			}
 			http.Error(w, "failed to generate news", http.StatusInternalServerError)
 			return
 		}
@@ -38,6 +44,10 @@ func newNewsHandler(service NewsArticleGenerator) http.Handler {
 			http.Error(w, "failed to encode response", http.StatusInternalServerError)
 		}
 	})
+}
+
+func isNotFoundError(err error) bool {
+	return errors.Is(err, sql.ErrNoRows) || strings.Contains(strings.ToLower(err.Error()), "not found")
 }
 
 func parseNewsMatchID(path string) (int, error) {
